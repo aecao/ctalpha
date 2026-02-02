@@ -7,7 +7,7 @@ const rootPath = process.cwd()
 const distPath = path.join(rootPath, 'dist')
 const srcPath = path.join(rootPath, 'src')
 
-const indexTemplateContent = fs.readFileSync(path.join(srcPath, 'index.html'), 'utf8').replace('<!-- body.html will be injected automatically -->', fs.readFileSync(path.join(srcPath, 'body.html'), 'utf8'))
+const indexTemplateContent = fs.readFileSync(path.join(srcPath, 'index.html'), 'utf8').replace("<%- htmlWebpackPlugin.options.bodyHtml %>", fs.readFileSync(path.join(srcPath, 'body.html'), 'utf8'))
 
 const ATTRIBUTES_TO_EXPAND = [
   'src', 'gltf-model', 'cover-image-url', 'footer-image-url', 'watermark-image-url',

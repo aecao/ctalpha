@@ -4,9 +4,6 @@ import {updateButtonVisibility} from './next-button.js'
 
 const originalMaterials = new Map()
 
-// Extra vertical offset applied to camera pivot (meters)
-const CAMERA_PIVOT_EXTRA_HEIGHT = 1.5
-
 function cacheOriginalMaterials(modelElement) {
   const mesh = modelElement.getObject3D('mesh')
   if (!mesh) return
@@ -123,8 +120,7 @@ export const selectComponent = {
             modelElement.object3D.getWorldPosition(worldPos)
             // Raise pivot slightly above model center for better framing
             const raise = 0.3
-            // Add configured extra height so pivot sits higher above models
-            cameraPivot.setAttribute('position', `${worldPos.x} ${worldPos.y + raise + CAMERA_PIVOT_EXTRA_HEIGHT} ${worldPos.z}`)
+            cameraPivot.setAttribute('position', `${worldPos.x} ${worldPos.y + raise} ${worldPos.z}`)
           }
         }
 
