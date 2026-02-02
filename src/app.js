@@ -37,6 +37,33 @@ AFRAME.registerComponent('enable-interaction-and-gestures', {
       gestureTarget.setAttribute('xrextras-pinch-scale', '')
 
       console.log('Gestures attached to', gestureTarget.id ? `#${gestureTarget.id}` : 'unknown')
+
+      // Fix occasional bad anchoring by clamping group Y shortly after XR starts
+      const clampGroupHeight = () => {
+        const group = scene.querySelector('#group')
+        const camera = scene.querySelector('#camera')
+        if (!group || !camera) return
+        const groupY = group.object3D.position.y
+        const cameraY = camera.object3D.getWorldPosition(new THREE.Vector3()).y
+        const maxAllowedY = cameraY + 0.5 // don't allow group to be more than 0.5m above camera
+        const minAllowedY = -5 // avoid extremely low placements
+        if (groupY > maxAllowedY) {
+          group.object3D.position.y = maxAllowedY
+        } else if (groupY < minAllowedY) {
+          group.object3D.position.y = minAllowedY
+        }
+      }
+
+      scene.addEventListener('xrstart', () => {
+        // Run clamp repeatedly for a short time to catch any late anchor updates
+        let ticks = 0
+        const interval = setInterval(() => {
+          clampGroupHeight()
+          ticks += 1
+          if (ticks > 10) clearInterval(interval)
+        }, 200)
+      })
+
     }
 
     // Enable gestures and interactions for XR start and desktop
