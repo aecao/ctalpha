@@ -137,6 +137,14 @@ a {
   display: flex;
   flex-direction: column;
   border-radius: 20px;
+  pointer-events: none; /* allow gestures to pass through when popup is visible */
+}
+
+/* Allow interactive children to receive pointer events */
+.popup-close-icon,
+.popup a,
+.popup button {
+  pointer-events: auto;
 }
 
 .popuptitle {
@@ -305,7 +313,10 @@ a {
   /* Place the title inside the popup above the body text */
   .popuptitle {
     position: static;
-    margin: 0 0 0.0625vh 0;
+    top: auto;
+    right: auto;
+    left: auto;
+    margin: 0 0 0 0;
     padding: 0;
     max-width: 100%;
     width: auto;

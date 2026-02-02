@@ -32,8 +32,9 @@ AFRAME.registerComponent('enable-interaction-and-gestures', {
         gestureTarget.setAttribute('xrextras-gesture-detector', '')
       }
 
-      // Only attach rotation gestures to the gesture target so models remain static
+      // Attach rotation and pinch-scale gestures to the gesture target so models remain static
       gestureTarget.setAttribute('xrextras-two-finger-rotate', '')
+      gestureTarget.setAttribute('xrextras-pinch-scale', '')
 
       console.log('Gestures attached to', gestureTarget.id ? `#${gestureTarget.id}` : 'unknown')
     }
