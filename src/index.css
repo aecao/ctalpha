@@ -286,6 +286,7 @@ a {
 /* If the device is in a horizontal (landscape) aspect ratio, show the popup on the right side */
 @media (min-aspect-ratio: 1/1) {
   .popup {
+    position: fixed;
     top: 10vh;
     bottom: 10vh;
     right: 3vw;
@@ -296,16 +297,34 @@ a {
     overflow-y: auto;
     padding: 2vh 2vw;
     border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
   }
 
+  /* Place the title inside the popup above the body text */
   .popuptitle {
-    top: 10vh;
-    right: calc(3vw + 30vw);
+    position: static;
+    top: auto;
+    right: auto;
     left: auto;
-    max-width: 25vw;
+    margin: 0 0 0.5vh 0;
+    padding: 0;
+    max-width: 100%;
+    width: auto;
+    text-align: left;
+    font-size: 1.05em;
+    font-weight: 800;
   }
 
   .popup-content-wrapper {
-    max-height: calc(80vh - 8vh);
+    max-height: calc(80vh - 6vh);
+    overflow-y: auto;
+  }
+
+  .popup-close-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
   }
 }
