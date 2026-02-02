@@ -323,6 +323,8 @@ a {
     text-align: left;
     font-size: 1.05em;
     font-weight: 800;
+    /* larger top margin in landscape to lower title */
+    margin-top: 2vh;
   }
 
   .popup-content-wrapper {
