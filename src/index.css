@@ -304,17 +304,19 @@ a {
 
   /* Place the title inside the popup above the body text */
   .popuptitle {
-    position: static;
+    position: relative;
     top: auto;
     right: auto;
     left: auto;
-    margin: 0 0 0.125vh 0;
+    margin: 0 0 0.0625vh 0;
     padding: 0;
     max-width: 100%;
     width: auto;
     text-align: left;
     font-size: 1.05em;
     font-weight: 800;
+    transform: translateY(0.6vh); /* visually move title down to overlap body */
+    z-index: 2; /* ensure it sits above body text */
   }
 
   .popup-content-wrapper {
