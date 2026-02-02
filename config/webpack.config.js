@@ -1,10 +1,13 @@
 const path = require('path')
+const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const rootPath = process.cwd()
 const distPath = path.join(rootPath, 'dist')
 const srcPath = path.join(rootPath, 'src')
+
+const indexTemplateContent = fs.readFileSync(path.join(srcPath, 'index.html'), 'utf8').replace('<!-- body.html will be injected automatically -->', fs.readFileSync(path.join(srcPath, 'body.html'), 'utf8'))
 
 const ATTRIBUTES_TO_EXPAND = [
   'src', 'gltf-model', 'cover-image-url', 'footer-image-url', 'watermark-image-url',
@@ -80,7 +83,7 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.join(srcPath, 'index.html'),
+      templateContent: indexTemplateContent,
       filename: 'index.html',
       inject: false,
     }),
@@ -122,6 +125,7 @@ const config = {
     compress: true,
     hot: true,
     liveReload: false,
+    watchFiles: [path.join(srcPath, 'body.html'), path.join(srcPath, 'head.html')],
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
