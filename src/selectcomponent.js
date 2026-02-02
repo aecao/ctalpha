@@ -76,23 +76,41 @@ export const selectComponent = {
           setTimeout(() => (locked = false), 250)
 
           const modelId = modelElement.id
+          const group = document.querySelector('#group')
 
           if (currentlySelected === modelId) {
+            // Deselect: restore gestures to the group
             currentlySelected = null
             resetModelOpacity()
             setSelectedIndex(-1)
             updateButtonVisibility()
+
+            // Move two-finger rotate back to the group
+            if (modelElement.hasAttribute('xrextras-two-finger-rotate')) {
+              modelElement.removeAttribute('xrextras-two-finger-rotate')
+              if (!group.hasAttribute('xrextras-two-finger-rotate')) {
+                group.setAttribute('xrextras-two-finger-rotate', '')
+              }
+            }
+
             return
           }
 
           const index = modelDescriptions.findIndex(d => d.Modelname === modelId)
           if (index === -1) return
 
+          // Selecting a model: give the two-finger rotate to the selected model
           currentlySelected = modelId
           setSelectedIndex(index)
           openPopup(index, modelDescriptions)
           updateModelVisibility(modelId)
           updateButtonVisibility()
+
+          // Transfer two-finger rotate from the group to the selected model so rotation occurs around its center
+          if (group.hasAttribute('xrextras-two-finger-rotate')) {
+            group.removeAttribute('xrextras-two-finger-rotate')
+          }
+          modelElement.setAttribute('xrextras-two-finger-rotate', '')
         }
 
         modelElement.addEventListener('mousedown', handleSelect)
