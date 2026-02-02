@@ -23,45 +23,19 @@ AFRAME.registerComponent('enable-interaction-and-gestures', {
       camera.setAttribute('raycaster', 'objects: .cantap, .interactable')
       camera.setAttribute('cursor', 'rayOrigin: mouse; fuse: false')
 
-      // Attach gestures only once
-      if (!group.hasAttribute('xrextras-gesture-detector')) {
-        group.setAttribute('xrextras-gesture-detector', '')
-      }
-      group.setAttribute('xrextras-hold-drag', 'rise-height: 0')
-      group.setAttribute('xrextras-pinch-scale', '')
+      // Prefer attaching rotate gestures to a camera pivot so the camera (not the models)
+      // pivots around a higher point. Fall back to #group if #camera_pivot is missing.
+      const cameraPivot = scene.querySelector('#camera_pivot')
+      const gestureTarget = cameraPivot || group
 
-      // Ensure a camera pivot exists and attach two-finger-rotate to it (so camera pivots instead of models rotating)
-      const ensureCameraPivot = () => {
-        let pivot = scene.querySelector('#camera_pivot')
-        const camera = scene.querySelector('#camera')
-        if (!pivot) {
-          pivot = document.createElement('a-entity')
-          pivot.setAttribute('id', 'camera_pivot')
-
-          // Preserve camera world transform while reparenting to pivot
-          const camWorldPos = new THREE.Vector3()
-          const camWorldQuat = new THREE.Quaternion()
-          camera.object3D.getWorldPosition(camWorldPos)
-          camera.object3D.getWorldQuaternion(camWorldQuat)
-
-          scene.appendChild(pivot)
-          pivot.appendChild(camera)
-
-          pivot.object3D.worldToLocal(camWorldPos)
-          camera.object3D.position.copy(camWorldPos)
-          const inv = pivot.object3D.quaternion.clone().invert()
-          const localQuat = inv.multiply(camWorldQuat)
-          camera.object3D.quaternion.copy(localQuat)
-        }
-        return pivot
+      if (!gestureTarget.hasAttribute('xrextras-gesture-detector')) {
+        gestureTarget.setAttribute('xrextras-gesture-detector', '')
       }
 
-      const pivot = ensureCameraPivot()
-      if (!pivot.hasAttribute('xrextras-two-finger-rotate')) {
-        pivot.setAttribute('xrextras-two-finger-rotate', '')
-      }
+      // Only attach rotation gestures to the gesture target so models remain static
+      gestureTarget.setAttribute('xrextras-two-finger-rotate', '')
 
-      console.log('Gestures attached to #group (rotate is on #camera_pivot)')
+      console.log('Gestures attached to', gestureTarget.id ? `#${gestureTarget.id}` : 'unknown')
     }
 
     // Enable gestures and interactions for XR start and desktop

@@ -22,7 +22,7 @@
 </div>
 
 <div id="placebutton" style="display: none; z-index: 200">
-  <h2>Move a Linear Accelerlator with your fingers and press this button</h2>
+  <h2>Move a CT Scanner with your fingers and press this button</h2>
 </div>
 
 <div id="popup" class="popup" style="display: none">
@@ -79,13 +79,15 @@
   </a-assets>
 
   <!-- Camera with raycaster for tap interactions -->
-  <a-camera
-    id="camera"
-    position="4 0 0"
-    rotation="0 90 0"
-    raycaster="objects: .cantap, .interactable"
-    cursor="rayOrigin: mouse; fuse: false">
-  </a-camera>
+  <a-entity id="camera_pivot" position="0 1 0">
+    <a-camera
+      id="camera"
+      position="4 0 0"
+      rotation="0 90 0"
+      raycaster="objects: .cantap, .interactable"
+      cursor="rayOrigin: mouse; fuse: false">
+    </a-camera>
+  </a-entity>
 
   <!-- Lights -->
   <a-entity
