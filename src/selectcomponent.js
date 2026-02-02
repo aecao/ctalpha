@@ -103,6 +103,7 @@ export const selectComponent = {
             const raise = 0.3
             cameraPivot.setAttribute('position', `${worldPos.x} ${worldPos.y + raise} ${worldPos.z}`)
           }
+        }
 
         // Attach the select handler to the model element
         modelElement.addEventListener('click', handleSelect)
@@ -110,4 +111,5 @@ export const selectComponent = {
     })
   },
 }
+
 
