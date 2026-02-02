@@ -5,7 +5,7 @@ import {updateButtonVisibility} from './next-button.js'
 const originalMaterials = new Map()
 
 // Extra vertical offset applied to camera pivot (meters)
-const CAMERA_PIVOT_EXTRA_HEIGHT = 5
+const CAMERA_PIVOT_EXTRA_HEIGHT = 1.5
 
 function cacheOriginalMaterials(modelElement) {
   const mesh = modelElement.getObject3D('mesh')
