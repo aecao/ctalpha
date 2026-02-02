@@ -70,6 +70,31 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
   },
 })
 
+// General metallic finish component for other models
+AFRAME.registerComponent('metallic', {
+  init() {
+    this.el.addEventListener('model-loaded', () => {
+      const mesh = this.el.getObject3D('mesh')
+      if (!mesh) return
+
+      mesh.traverse((node) => {
+        if (!node.isMesh && !node.isSkinnedMesh) return
+
+        // Clone material so other models aren't affected
+        node.material = node.material.clone()
+
+        // Neutral metallic appearance
+        node.material.color.set('#E6E6E6')
+        node.material.metalness = 0.92
+        node.material.roughness = 0.18
+        node.material.emissive.set('#000000')
+        node.material.envMapIntensity = 2.2
+        node.material.needsUpdate = true
+      })
+    })
+  },
+})
+
 // light plastic finish for detector array
 AFRAME.registerComponent('light-plastic', {
   init() {
