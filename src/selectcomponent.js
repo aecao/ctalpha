@@ -1,5 +1,5 @@
 import {modelDescriptions, setSelectedIndex} from './data.js'
-import {openPopup} from './popup.js'
+import {openPopup, closePopup} from './popup.js'
 import {updateButtonVisibility} from './next-button.js'
 
 const originalMaterials = new Map()
@@ -79,7 +79,8 @@ export const selectComponent = {
 
           if (currentlySelected === modelId) {
             currentlySelected = null
-            resetModelOpacity()
+            // Close the popup and restore model visuals
+            closePopup()
             setSelectedIndex(-1)
             updateButtonVisibility()
             return

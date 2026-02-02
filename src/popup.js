@@ -36,4 +36,11 @@ function openPopup(modelIndex, modelDescriptions) {
   }
 }
 
-export {openPopup}
+// Programmatic close for other components to call
+function closePopup() {
+  const popup = document.getElementById('popup')
+  if (popup) popup.style.display = 'none'
+  resetModelOpacity()
+}
+
+export {openPopup, closePopup}
