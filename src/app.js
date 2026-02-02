@@ -28,10 +28,40 @@ AFRAME.registerComponent('enable-interaction-and-gestures', {
         group.setAttribute('xrextras-gesture-detector', '')
       }
       group.setAttribute('xrextras-hold-drag', 'rise-height: 0')
-      group.setAttribute('xrextras-two-finger-rotate', '')
       group.setAttribute('xrextras-pinch-scale', '')
 
-      console.log('Gestures attached to #group')
+      // Ensure a camera pivot exists and attach two-finger-rotate to it (so camera pivots instead of models rotating)
+      const ensureCameraPivot = () => {
+        let pivot = scene.querySelector('#camera_pivot')
+        const camera = scene.querySelector('#camera')
+        if (!pivot) {
+          pivot = document.createElement('a-entity')
+          pivot.setAttribute('id', 'camera_pivot')
+
+          // Preserve camera world transform while reparenting to pivot
+          const camWorldPos = new THREE.Vector3()
+          const camWorldQuat = new THREE.Quaternion()
+          camera.object3D.getWorldPosition(camWorldPos)
+          camera.object3D.getWorldQuaternion(camWorldQuat)
+
+          scene.appendChild(pivot)
+          pivot.appendChild(camera)
+
+          pivot.object3D.worldToLocal(camWorldPos)
+          camera.object3D.position.copy(camWorldPos)
+          const inv = pivot.object3D.quaternion.clone().invert()
+          const localQuat = inv.multiply(camWorldQuat)
+          camera.object3D.quaternion.copy(localQuat)
+        }
+        return pivot
+      }
+
+      const pivot = ensureCameraPivot()
+      if (!pivot.hasAttribute('xrextras-two-finger-rotate')) {
+        pivot.setAttribute('xrextras-two-finger-rotate', '')
+      }
+
+      console.log('Gestures attached to #group (rotate is on #camera_pivot)')
     }
 
     // Enable gestures and interactions for XR start and desktop
