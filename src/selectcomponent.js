@@ -43,7 +43,7 @@ export function setOpacity(modelElement, opacity, highlight = false) {
       // Keep original color, only add emissive glow
       node.material.color.copy(originalMaterials.get(node).color)
       if (node.material.emissive) {
-        node.material.emissive.set(0x0088ff)
+        node.material.emissive.set(0x00ff00)
         node.material.emissiveIntensity = 0.4
       }
     } else {
