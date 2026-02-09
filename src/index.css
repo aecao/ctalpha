@@ -20,10 +20,8 @@ body {
   background-color: rgb(88, 86, 214);
 }
 
-/* Start, next, back, place buttons */
+/* Start, place buttons */
 #startbutton,
-#nextbutton,
-#backbutton,
 #placebutton {
   background-color: var(--primary-bg-color);
   border: var(--button-border);
@@ -33,45 +31,26 @@ body {
   height: auto;
   cursor: pointer;
   border-radius: 20px;
-}
-
-/* Individual widths & positions */
-#startbutton,
-#placebutton {
   width: 50vw;
   left: 25vw;
-}
-#nextbutton {
-  width: 20vw;
-  right: 5vw;
-}
-#backbutton {
-  width: 20vw;
-  left: 5vw;
 }
 
 /* Center-align text for h2 within buttons */
 #startbutton h2,
-#nextbutton h2,
-#backbutton h2,
-#message h2,
-#placebutton h2 {
+#placebutton h2,
+#message h2 {
   text-align: center;
 }
 
-/* Hover state for buttons */
+/* Hover state for start/place buttons */
 #startbutton:hover,
-#nextbutton:hover,
-#backbutton:hover,
 #placebutton:hover {
   background-color: #d0d0d0;
   border: 0.2em solid #f0f0f0;
 }
 
-/* Active (click) state for buttons */
+/* Active (click) state for start/place buttons */
 #startbutton:active,
-#nextbutton:active,
-#backbutton:active,
 #placebutton:active {
   background-color: #c0c0c0;
   color: #202020;
@@ -211,6 +190,8 @@ a {
   height: auto;
   border-radius: 20px;
   pointer-events: auto;
+  position: relative;
+  cursor: pointer;
 }
 
 #nextbutton h2,
