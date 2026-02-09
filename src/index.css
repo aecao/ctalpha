@@ -134,9 +134,9 @@ a {
 
 #nextbutton,
 #backbutton {
-  background-color: var(--primary-bg-color);
-  border: var(--button-border);
-  color: var(--text-color);
+  background-color: #000000;
+  border: none;
+  color: #ffffff;
   width: 20vw;
   height: auto;
   border-radius: 20px;
@@ -159,18 +159,19 @@ a {
 #backbutton h2 {
   text-align: center;
   margin: 0.5em;
+  text-transform: uppercase;
 }
 
 #nextbutton:hover,
 #backbutton:hover {
-  background-color: #d0d0d0;
+  background-color: #333333;
   cursor: pointer;
 }
 
 #nextbutton:active,
 #backbutton:active {
-  background-color: #c0c0c0;
-  color: #202020;
+  background-color: #555555;
+  color: #ffffff;
 }
 
 .popup-close-icon {
