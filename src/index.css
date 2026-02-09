@@ -116,14 +116,6 @@ a {
   display: flex;
   flex-direction: column;
   border-radius: 20px;
-  pointer-events: none; /* allow gestures to pass through when popup is visible */
-}
-
-/* Allow interactive children to receive pointer events */
-.popup-close-icon,
-.popup a,
-.popup button {
-  pointer-events: auto;
 }
 
 .popuptitle {
