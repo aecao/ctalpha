@@ -76,15 +76,13 @@ a {
 }
 
 .popuptitle {
-  position: fixed;
-  top: 56vh;
-  bottom: 20vh;
-  left: 3vw;
-  right: 10vw;
-  padding: 4vh 3vw;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
+  position: static;
+  margin: 0;
+  padding: 0;
+  font-size: 1.1em;
+  font-weight: 800;
+  line-height: 1.2em;
+  flex-shrink: 0;
 }
 
 .popup-content-wrapper {
@@ -267,13 +265,13 @@ a {
 @media (min-aspect-ratio: 1/1) {
   .popup {
     position: fixed;
-    top: 10vh;
-    bottom: 10vh;
+    top: 5vh;
+    bottom: 5vh;
     right: 3vw;
     left: auto;
     width: 26vw;
     max-width: 34vw;
-    max-height: 80vh;
+    height: auto;
     overflow-y: auto;
     padding: 2vh 2vw;
     border-radius: 12px;
@@ -288,19 +286,18 @@ a {
     top: auto;
     right: auto;
     left: auto;
-    margin: 0 0 0 0;
+    margin: 0 0 1vh 0;
     padding: 0;
     max-width: 100%;
     width: auto;
     text-align: left;
     font-size: 1.05em;
     font-weight: 800;
-    /* larger top margin in landscape to lower title */
-    margin-top: 2vh;
+    margin-top: 1vh;
   }
 
   .popup-content-wrapper {
-    max-height: calc(80vh - 6vh);
+    flex: 1;
     overflow-y: auto;
   }
 
