@@ -28,46 +28,6 @@ AFRAME.registerComponent('next-button', nextButtonComponent())
 AFRAME.registerComponent('rotate-button', rotateComponent)
 AFRAME.registerComponent('selectcomponent', selectComponent)
 
-// Tone mapping and SSAO for better lighting
-AFRAME.registerComponent('post-processing', {
-  init() {
-    const scene = this.el
-    const renderer = scene.renderer
-    const camera = scene.camera
-    
-    // Enable tone mapping on the renderer
-    renderer.toneMapping = THREE.ReinhardToneMapping
-    renderer.toneMappingExposure = 1.0
-    renderer.outputColorSpace = THREE.SRGBColorSpace
-    
-    // Setup post-processing for SSAO
-    const composer = new THREE.EffectComposer(renderer)
-    const renderPass = new THREE.RenderPass(scene.object3D, camera)
-    composer.addPass(renderPass)
-    
-    // Add SSAO pass
-    const ssaoPass = new THREE.SSAOPass(scene.object3D, camera, window.innerWidth, window.innerHeight)
-    ssaoPass.kernelRadius = 16
-    ssaoPass.minDistance = 0.005
-    ssaoPass.maxDistance = 0.1
-    composer.addPass(ssaoPass)
-    
-    // Store composer for render loop
-    scene.userData.composer = composer
-    scene.userData.useComposer = true
-    
-    // Override render loop to use composer
-    const originalRender = renderer.render.bind(renderer)
-    renderer.render = function(sceneToRender, cameraToUse) {
-      if (scene.userData.composer && scene.userData.useComposer) {
-        scene.userData.composer.render()
-      } else {
-        originalRender(sceneToRender, cameraToUse)
-      }
-    }
-  }
-})
-
 // Combined interaction + gestures component
 AFRAME.registerComponent('enable-interaction-and-gestures', {
   init() {
@@ -318,6 +278,61 @@ AFRAME.registerComponent('fabric', {
     })
   },
 })
+
+// SSAO (Screen Space Ambient Occlusion) component for post-processing depth
+AFRAME.registerComponent('ssao', {
+  init() {
+    const scene = this.el
+    const renderer = this.el.renderer
+    
+    scene.addEventListener('loaded', () => {
+      // Delay to ensure renderer is fully ready
+      setTimeout(() => {
+        setupSSAO(scene, renderer)
+      }, 500)
+    })
+  },
+})
+
+function setupSSAO(scene, renderer) {
+  if (!renderer || !renderer.getPixelRatio) return
+  
+  const camera = scene.querySelector('#camera')?.object3D
+  if (!camera) return
+  
+  try {
+    // Create effect composer for post-processing
+    const composer = new THREE.EffectComposer(renderer)
+    const renderPass = new THREE.RenderPass(scene.object3D, camera)
+    composer.addPass(renderPass)
+    
+    // Configure SSAO pass
+    const ssaoPass = new THREE.SSAOPass(scene.object3D, camera, renderer.domElement.offsetWidth, renderer.domElement.offsetHeight)
+    ssaoPass.radius = 20 // Radius of the SSAO effect
+    ssaoPass.onlyAO = false // Show SSAO with lighting
+    ssaoPass.intensity = 4.0 // Darkness intensity (0-20, higher = more visible)
+    ssaoPass.scale = 1.0
+    ssaoPass.bias = 0.5
+    composer.addPass(ssaoPass)
+    
+    // Store composer for rendering
+    scene.userData.composer = composer
+    
+    // Override render loop to use composer
+    const originalRender = renderer.render.bind(renderer)
+    renderer.render = function(s, c) {
+      if (scene.userData.composer) {
+        scene.userData.composer.render()
+      } else {
+        originalRender(s, c)
+      }
+    }
+    
+    console.log('SSAO initialized successfully')
+  } catch (e) {
+    console.warn('SSAO setup failed:', e.message)
+  }
+}
 
 // iOS fix for image decoding
 const IS_IOS =
