@@ -28,6 +28,46 @@ AFRAME.registerComponent('next-button', nextButtonComponent())
 AFRAME.registerComponent('rotate-button', rotateComponent)
 AFRAME.registerComponent('selectcomponent', selectComponent)
 
+// Tone mapping and SSAO for better lighting
+AFRAME.registerComponent('post-processing', {
+  init() {
+    const scene = this.el
+    const renderer = scene.renderer
+    const camera = scene.camera
+    
+    // Enable tone mapping on the renderer
+    renderer.toneMapping = THREE.ReinhardToneMapping
+    renderer.toneMappingExposure = 1.0
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    
+    // Setup post-processing for SSAO
+    const composer = new THREE.EffectComposer(renderer)
+    const renderPass = new THREE.RenderPass(scene.object3D, camera)
+    composer.addPass(renderPass)
+    
+    // Add SSAO pass
+    const ssaoPass = new THREE.SSAOPass(scene.object3D, camera, window.innerWidth, window.innerHeight)
+    ssaoPass.kernelRadius = 16
+    ssaoPass.minDistance = 0.005
+    ssaoPass.maxDistance = 0.1
+    composer.addPass(ssaoPass)
+    
+    // Store composer for render loop
+    scene.userData.composer = composer
+    scene.userData.useComposer = true
+    
+    // Override render loop to use composer
+    const originalRender = renderer.render.bind(renderer)
+    renderer.render = function(sceneToRender, cameraToUse) {
+      if (scene.userData.composer && scene.userData.useComposer) {
+        scene.userData.composer.render()
+      } else {
+        originalRender(sceneToRender, cameraToUse)
+      }
+    }
+  }
+})
+
 // Combined interaction + gestures component
 AFRAME.registerComponent('enable-interaction-and-gestures', {
   init() {
@@ -223,32 +263,6 @@ AFRAME.registerComponent('med-plastic', {
         const envMap = getEnvMapTexture()
         if (envMap) node.material.envMap = envMap
         node.material.envMapIntensity = 1.2
-        node.material.needsUpdate = true
-      })
-    })
-  },
-})
-
-// glossy plastic finish for gantry housing and bore
-AFRAME.registerComponent('glossy-plastic', {
-  init() {
-    this.el.addEventListener('model-loaded', () => {
-      const mesh = this.el.getObject3D('mesh')
-      if (!mesh) return
-
-      mesh.traverse((node) => {
-        if (!node.isMesh) return
-
-        // Clone material so other models aren't affected
-        node.material = node.material.clone()
-
-        // glossy plastic finish
-        node.material.color.set('#FFFFFF')
-        node.material.metalness = 0.0
-        node.material.roughness = 0.15
-        const envMap = getEnvMapTexture()
-        if (envMap) node.material.envMap = envMap
-        node.material.envMapIntensity = 1.8
         node.material.needsUpdate = true
       })
     })
