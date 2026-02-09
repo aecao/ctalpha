@@ -14,6 +14,8 @@ function cacheOriginalMaterials(modelElement) {
         transparent: node.material.transparent,
         opacity: node.material.opacity,
         color: node.material.color.clone(),
+        emissive: node.material.emissive ? node.material.emissive.clone() : new THREE.Color(0x000000),
+        emissiveIntensity: node.material.emissiveIntensity || 0,
       })
     }
   })
@@ -30,12 +32,27 @@ export function setOpacity(modelElement, opacity, highlight = false) {
         transparent: node.material.transparent,
         opacity: node.material.opacity,
         color: node.material.color.clone(),
+        emissive: node.material.emissive ? node.material.emissive.clone() : new THREE.Color(0x000000),
+        emissiveIntensity: node.material.emissiveIntensity || 0,
       })
     }
     node.material.transparent = true
     node.material.opacity = opacity
-    if (highlight) node.material.color.set(0xff0000)
-    else node.material.color.copy(originalMaterials.get(node).color)
+    if (highlight) {
+      node.material.color.set(0xff0000)
+      // Add emissive glow to selected component
+      if (node.material.emissive) {
+        node.material.emissive.set(0x4488ff)
+        node.material.emissiveIntensity = 0.4
+      }
+    } else {
+      node.material.color.copy(originalMaterials.get(node).color)
+      // Reset emissive for unselected components
+      if (node.material.emissive) {
+        node.material.emissive.copy(originalMaterials.get(node).emissive)
+        node.material.emissiveIntensity = originalMaterials.get(node).emissiveIntensity
+      }
+    }
   })
 }
 
@@ -51,6 +68,10 @@ export function resetModelOpacity() {
     node.material.transparent = mat.transparent
     node.material.opacity = mat.opacity
     node.material.color.copy(mat.color)
+    if (node.material.emissive) {
+      node.material.emissive.copy(mat.emissive)
+      node.material.emissiveIntensity = mat.emissiveIntensity
+    }
   })
 }
 
