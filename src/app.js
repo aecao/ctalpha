@@ -229,6 +229,32 @@ AFRAME.registerComponent('med-plastic', {
   },
 })
 
+// glossy plastic finish for gantry housing and bore
+AFRAME.registerComponent('glossy-plastic', {
+  init() {
+    this.el.addEventListener('model-loaded', () => {
+      const mesh = this.el.getObject3D('mesh')
+      if (!mesh) return
+
+      mesh.traverse((node) => {
+        if (!node.isMesh) return
+
+        // Clone material so other models aren't affected
+        node.material = node.material.clone()
+
+        // glossy plastic finish
+        node.material.color.set('#FFFFFF')
+        node.material.metalness = 0.0
+        node.material.roughness = 0.15
+        const envMap = getEnvMapTexture()
+        if (envMap) node.material.envMap = envMap
+        node.material.envMapIntensity = 1.8
+        node.material.needsUpdate = true
+      })
+    })
+  },
+})
+
 // dark plastic finish
 AFRAME.registerComponent('dark-plastic', {
   init() {
