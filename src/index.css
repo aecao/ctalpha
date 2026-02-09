@@ -202,6 +202,35 @@ a {
   gap: 20px;
 }
 
+#nextbutton,
+#backbutton {
+  background-color: var(--primary-bg-color);
+  border: var(--button-border);
+  color: var(--text-color);
+  width: 20vw;
+  height: auto;
+  border-radius: 20px;
+  pointer-events: auto;
+}
+
+#nextbutton h2,
+#backbutton h2 {
+  text-align: center;
+  margin: 0.5em;
+}
+
+#nextbutton:hover,
+#backbutton:hover {
+  background-color: #d0d0d0;
+  cursor: pointer;
+}
+
+#nextbutton:active,
+#backbutton:active {
+  background-color: #c0c0c0;
+  color: #202020;
+}
+
 .popup-close-icon {
   position: absolute;
   top: 0;
