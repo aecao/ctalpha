@@ -255,6 +255,30 @@ AFRAME.registerComponent('dark-plastic', {
   },
 })
 
+// Fabric finish for patient table
+AFRAME.registerComponent('fabric', {
+  init() {
+    this.el.addEventListener('model-loaded', () => {
+      const mesh = this.el.getObject3D('mesh')
+      if (!mesh) return
+
+      mesh.traverse((node) => {
+        if (!node.isMesh) return
+
+        node.material = node.material.clone()
+
+        node.material.color.set('#C7C2B8')
+        node.material.metalness = 0.0
+        node.material.roughness = 0.9
+        const envMap = getEnvMapTexture()
+        if (envMap) node.material.envMap = envMap
+        node.material.envMapIntensity = 0.4
+        node.material.needsUpdate = true
+      })
+    })
+  },
+})
+
 // iOS fix for image decoding
 const IS_IOS =
   /^(iPad|iPhone|iPod)/.test(window.navigator.platform) ||
