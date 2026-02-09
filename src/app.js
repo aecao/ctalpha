@@ -137,13 +137,13 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         node.material = node.material.clone()
 
         // Medical-grade metallic finish
-        node.material.color.set('#DADADA')
+        node.material.color.set('#B8B8B8')
         node.material.metalness = 0.95
-        node.material.roughness = 0.22
+        node.material.roughness = 0.45
         node.material.emissive.set('#000000')
         const envMap = getEnvMapTexture()
         if (envMap) node.material.envMap = envMap
-        node.material.envMapIntensity = 2.0
+        node.material.envMapIntensity = 1.2
         node.material.needsUpdate = true
       })
     })
@@ -164,13 +164,13 @@ AFRAME.registerComponent('metallic', {
         node.material = node.material.clone()
 
         // Neutral metallic appearance
-        node.material.color.set('#CCCCCC')
+        node.material.color.set('#AAAAAA')
         node.material.metalness = 0.92
-        node.material.roughness = 0.18
+        node.material.roughness = 0.5
         node.material.emissive.set('#000000')
         const envMap = getEnvMapTexture()
         if (envMap) node.material.envMap = envMap
-        node.material.envMapIntensity = 2.2
+        node.material.envMapIntensity = 1.3
         node.material.needsUpdate = true
       })
     })
