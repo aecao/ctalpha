@@ -25,26 +25,9 @@ body {
   background-color: rgb(88, 86, 214);
 }
 
-/* Start, place buttons */
-#startbutton,
-#placebutton {
-  background-color: var(--primary-bg-color);
-  border: var(--button-border);
-  color: var(--text-color);
-  position: fixed;
-  bottom: 1.5vh;
-  height: auto;
-  cursor: pointer;
-  border-radius: 20px;
-  z-index: 10000;
-  width: 50vw;
-  left: 25vw;
-}
-
 /* Center-align text for h2 within message */
 #message h2 {
   text-align: center;
-}
 }
 
 /* Headings & text */
