@@ -275,6 +275,7 @@ a {
   .popup {
     position: fixed;
     top: 50%;
+    bottom: auto;
     transform: translateY(-50%);
     right: 20px;
     left: auto;
