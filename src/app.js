@@ -137,7 +137,7 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         node.material = node.material.clone()
 
         // Medical-grade metallic finish
-        node.material.color.set('#F2F2F2')
+        node.material.color.set('#DADADA')
         node.material.metalness = 0.95
         node.material.roughness = 0.22
         node.material.emissive.set('#000000')
@@ -164,7 +164,7 @@ AFRAME.registerComponent('metallic', {
         node.material = node.material.clone()
 
         // Neutral metallic appearance
-        node.material.color.set('#E6E6E6')
+        node.material.color.set('#CCCCCC')
         node.material.metalness = 0.92
         node.material.roughness = 0.18
         node.material.emissive.set('#000000')
