@@ -96,6 +96,15 @@ export const selectComponent = {
         modelElement.addEventListener('model-loaded', () => {
           cacheOriginalMaterials(modelElement)
           // Model alignment removed to avoid shifting assets out of place
+          if (modelElement.id === 'xray_tube') {
+            const mesh = modelElement.getObject3D('mesh')
+            if (mesh) {
+              mesh.traverse((node) => {
+                if (!node.isMesh && !node.isSkinnedMesh) return
+                node.renderOrder = 10
+              })
+            }
+          }
         })
 
         const handleSelect = (e) => {
