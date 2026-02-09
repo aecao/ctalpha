@@ -19,21 +19,6 @@ function cacheOriginalMaterials(modelElement) {
   })
 }
 
-// Ensure model's base sits on the ground by shifting the model so its bounding box bottom is at y=0
-function alignModelBaseToGround(modelElement) {
-  if (modelElement.dataset.baseAligned === 'true') return
-  const mesh = modelElement.getObject3D('mesh')
-  if (!mesh) return
-  const box = new THREE.Box3().setFromObject(mesh)
-  if (!box.isEmpty()) {
-    const minY = box.min.y
-    if (Number.isFinite(minY) && Math.abs(minY) > 1e-5) {
-      // Move the model down so the lowest point sits at y=0
-      modelElement.object3D.position.y -= minY
-      modelElement.dataset.baseAligned = 'true'
-    }
-  }
-}
 
 export function setOpacity(modelElement, opacity, highlight = false) {
   const mesh = modelElement.getObject3D('mesh')
@@ -82,8 +67,7 @@ export const selectComponent = {
         // Also wait for model-loaded in case mesh is async
         modelElement.addEventListener('model-loaded', () => {
           cacheOriginalMaterials(modelElement)
-          // Align the model base to the ground to prevent it from appearing high when anchored
-          alignModelBaseToGround(modelElement)
+          // Model alignment removed to avoid shifting assets out of place
         })
 
         const handleSelect = (e) => {
