@@ -27,20 +27,15 @@ AFRAME.registerComponent('enable-interaction-and-gestures', {
       camera.setAttribute('raycaster', 'objects: .cantap, .interactable')
       camera.setAttribute('cursor', 'rayOrigin: mouse; fuse: false')
 
-      // Prefer attaching rotate gestures to a camera pivot so the camera (not the models)
-      // pivots around a higher point. Fall back to #group if #camera_pivot is missing.
-      const cameraPivot = scene.querySelector('#camera_pivot')
-      const gestureTarget = cameraPivot || group
-
-      if (!gestureTarget.hasAttribute('xrextras-gesture-detector')) {
-        gestureTarget.setAttribute('xrextras-gesture-detector', '')
+      // Attach gestures directly to the group (models rotate, camera stays fixed)
+      if (!group.hasAttribute('xrextras-gesture-detector')) {
+        group.setAttribute('xrextras-gesture-detector', '')
       }
 
-      // Attach rotation and pinch-scale gestures to the gesture target so models remain static
-      gestureTarget.setAttribute('xrextras-two-finger-rotate', '')
-      gestureTarget.setAttribute('xrextras-pinch-scale', '')
+      group.setAttribute('xrextras-two-finger-rotate', '')
+      group.setAttribute('xrextras-pinch-scale', '')
 
-      console.log('Gestures attached to', gestureTarget.id ? `#${gestureTarget.id}` : 'unknown')
+      console.log('Gestures attached to #group')
 
       // Fix occasional bad anchoring by clamping group Y shortly after XR starts
       const clampGroupHeight = () => {

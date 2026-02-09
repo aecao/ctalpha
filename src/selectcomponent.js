@@ -112,16 +112,6 @@ export const selectComponent = {
           openPopup(index, modelDescriptions)
           updateModelVisibility(modelId)
           updateButtonVisibility()
-
-          // Move the camera pivot to the selected model's world position so gestures pivot around it
-          const cameraPivot = document.querySelector('#camera_pivot')
-          if (cameraPivot) {
-            const worldPos = new THREE.Vector3()
-            modelElement.object3D.getWorldPosition(worldPos)
-            // Raise pivot slightly above model center for better framing
-            const raise = 0.3
-            cameraPivot.setAttribute('position', `${worldPos.x} ${worldPos.y + raise} ${worldPos.z}`)
-          }
         }
 
         // Attach the select handler to the model element
