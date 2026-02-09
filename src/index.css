@@ -73,6 +73,7 @@ a {
   display: flex;
   flex-direction: column;
   border-radius: 20px;
+  position: relative;
 }
 
 .popuptitle {
@@ -94,7 +95,7 @@ a {
   height: auto;
   max-height: 29vh;
   margin-top: 1.5vh;
-  margin-bottom: 5vh;
+  margin-bottom: 8vh;
   overflow-y: auto;
 }
 
@@ -127,7 +128,10 @@ a {
 .button-container {
   display: flex;
   justify-content: center;
-  margin-top: auto;
+  position: absolute;
+  bottom: 2vh;
+  left: 0;
+  right: 0;
   gap: 20px;
   pointer-events: auto;
 }
