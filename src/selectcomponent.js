@@ -39,7 +39,7 @@ export function setOpacity(modelElement, opacity, highlight = false) {
     node.material.transparent = true
     node.material.opacity = opacity
     if (highlight) {
-      node.material.color.set(0xff0000)
+      node.material.color.set(0x00ff00)
       // Add emissive glow to selected component
       if (node.material.emissive) {
         node.material.emissive.set(0x4488ff)
