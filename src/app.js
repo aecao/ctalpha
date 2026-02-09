@@ -8,6 +8,21 @@ import {initQRCode} from './qr-code'
 // Initialize QR code for desktop users
 initQRCode()
 
+let envMapTexture = null
+
+const getEnvMapTexture = () => {
+  if (envMapTexture) return envMapTexture
+  const imgEl = document.getElementById('hospital_env')
+  if (!imgEl || !imgEl.complete) return null
+
+  const texture = new THREE.Texture(imgEl)
+  texture.mapping = THREE.EquirectangularReflectionMapping
+  texture.encoding = THREE.sRGBEncoding
+  texture.needsUpdate = true
+  envMapTexture = texture
+  return envMapTexture
+}
+
 // Register your existing components
 AFRAME.registerComponent('next-button', nextButtonComponent())
 AFRAME.registerComponent('rotate-button', rotateComponent)
@@ -89,6 +104,8 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         node.material.metalness = 0.95
         node.material.roughness = 0.22
         node.material.emissive.set('#000000')
+        const envMap = getEnvMapTexture()
+        if (envMap) node.material.envMap = envMap
         node.material.envMapIntensity = 2.0
         node.material.needsUpdate = true
       })
@@ -114,6 +131,8 @@ AFRAME.registerComponent('metallic', {
         node.material.metalness = 0.92
         node.material.roughness = 0.18
         node.material.emissive.set('#000000')
+        const envMap = getEnvMapTexture()
+        if (envMap) node.material.envMap = envMap
         node.material.envMapIntensity = 2.2
         node.material.needsUpdate = true
       })
@@ -138,6 +157,8 @@ AFRAME.registerComponent('light-plastic', {
         node.material.color.set('#BBCEED')
         node.material.metalness = 0.0
         node.material.roughness = 0.45
+        const envMap = getEnvMapTexture()
+        if (envMap) node.material.envMap = envMap
         node.material.envMapIntensity = 1.2
         node.material.needsUpdate = true
       })
@@ -162,6 +183,8 @@ AFRAME.registerComponent('med-plastic', {
         node.material.color.set('#465369')
         node.material.metalness = 0.0
         node.material.roughness = 0.45
+        const envMap = getEnvMapTexture()
+        if (envMap) node.material.envMap = envMap
         node.material.envMapIntensity = 1.2
         node.material.needsUpdate = true
       })
@@ -186,6 +209,8 @@ AFRAME.registerComponent('dark-plastic', {
         node.material.color.set('#09090A')
         node.material.metalness = 0.0
         node.material.roughness = 0.45
+        const envMap = getEnvMapTexture()
+        if (envMap) node.material.envMap = envMap
         node.material.envMapIntensity = 1.2
         node.material.needsUpdate = true
       })
