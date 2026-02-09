@@ -60,30 +60,26 @@ const nextButtonComponent = () => ({
     }
 
     const nextButton = document.getElementById('nextbutton')
-    if (nextButton) {
-      nextButton.onclick = () => {
-        const currentIndex = getSelectedIndex()
-        if (currentIndex < modelDescriptions.length - 1) {
-          setSelectedIndex(currentIndex + 1)
-          const nextModelId = modelDescriptions[currentIndex + 1].Modelname
-          openPopup(getSelectedIndex(), modelDescriptions)
-          updateButtonVisibility()
-          updateModelVisibility(nextModelId)
-        }
+    nextButton.onclick = () => {
+      const currentIndex = getSelectedIndex()
+      if (currentIndex < modelDescriptions.length - 1) {
+        setSelectedIndex(currentIndex + 1)
+        const nextModelId = modelDescriptions[currentIndex + 1].Modelname
+        openPopup(getSelectedIndex(), modelDescriptions)
+        updateButtonVisibility()
+        updateModelVisibility(nextModelId)
       }
     }
 
     const backButton = document.getElementById('backbutton')
-    if (backButton) {
-      backButton.onclick = () => {
-        const currentIndex = getSelectedIndex()
-        if (currentIndex > 0) {
-          setSelectedIndex(currentIndex - 1)
-          const prevModelId = modelDescriptions[currentIndex - 1].Modelname
-          openPopup(getSelectedIndex(), modelDescriptions)
-          updateButtonVisibility()
-          updateModelVisibility(prevModelId)
-        }
+    backButton.onclick = () => {
+      const currentIndex = getSelectedIndex()
+      if (currentIndex > 0) {
+        setSelectedIndex(currentIndex - 1)
+        const prevModelId = modelDescriptions[currentIndex - 1].Modelname
+        openPopup(getSelectedIndex(), modelDescriptions)
+        updateButtonVisibility()
+        updateModelVisibility(prevModelId)
       }
     }
   },
