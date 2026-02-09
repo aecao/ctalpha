@@ -3,6 +3,10 @@ import './index.css'
 import {nextButtonComponent} from './next-button'
 import {rotateComponent} from './rotate-button'
 import {selectComponent} from './selectcomponent'
+import {initQRCode} from './qr-code'
+
+// Initialize QR code for desktop users
+initQRCode()
 
 // Register your existing components
 AFRAME.registerComponent('next-button', nextButtonComponent())
