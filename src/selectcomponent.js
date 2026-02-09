@@ -36,8 +36,10 @@ export function setOpacity(modelElement, opacity, highlight = false) {
         emissiveIntensity: node.material.emissiveIntensity || 0,
       })
     }
-    node.material.transparent = true
+    const isTransparent = opacity < 1
+    node.material.transparent = isTransparent
     node.material.opacity = opacity
+    node.material.depthWrite = !isTransparent
     if (highlight) {
       node.material.color.set(0x00ff00)
       // Add emissive glow to selected component
@@ -58,8 +60,13 @@ export function setOpacity(modelElement, opacity, highlight = false) {
 
 export function updateModelVisibility(selectedModelId) {
   document.querySelectorAll('.cantap').forEach((el) => {
-    if (el.id === selectedModelId) setOpacity(el, 1, true)
-    else setOpacity(el, 0.3)
+    if (el.id === selectedModelId) {
+      setOpacity(el, 1, true)
+    } else if (el.id === 'xray_tube') {
+      setOpacity(el, 1)
+    } else {
+      setOpacity(el, 0.3)
+    }
   })
 }
 
