@@ -86,6 +86,43 @@ AFRAME.registerComponent('enable-interaction-and-gestures', {
   },
 })
 
+// Clamp the group position to prevent sudden jumps out of view
+AFRAME.registerComponent('clamp-group', {
+  schema: {
+    maxDistance: {type: 'number', default: 6},
+    minDistance: {type: 'number', default: 0.5},
+    maxYOffset: {type: 'number', default: 2},
+    minYOffset: {type: 'number', default: -2},
+  },
+  init() {
+    this.camera = this.el.sceneEl.querySelector('#camera')
+  },
+  tick() {
+    if (!this.camera) return
+    const groupPos = this.el.object3D.position
+    const camPos = this.camera.object3D.position
+
+    const dx = groupPos.x - camPos.x
+    const dz = groupPos.z - camPos.z
+    const dist = Math.sqrt(dx * dx + dz * dz)
+
+    if (dist > this.data.maxDistance && dist > 0) {
+      const scale = this.data.maxDistance / dist
+      groupPos.x = camPos.x + dx * scale
+      groupPos.z = camPos.z + dz * scale
+    } else if (dist < this.data.minDistance && dist > 0) {
+      const scale = this.data.minDistance / dist
+      groupPos.x = camPos.x + dx * scale
+      groupPos.z = camPos.z + dz * scale
+    }
+
+    const minY = camPos.y + this.data.minYOffset
+    const maxY = camPos.y + this.data.maxYOffset
+    if (groupPos.y < minY) groupPos.y = minY
+    if (groupPos.y > maxY) groupPos.y = maxY
+  },
+})
+
 // Metallic finish for gantry ring
 AFRAME.registerComponent('slip-ring-assembly-metal', {
   init() {
