@@ -132,13 +132,14 @@
     xrextras-pinch-scale>
     <!-- Rotation pivot (optional, you can keep it for organization) -->
     <a-entity id="rotation_pivot" position="0 0 0">
-      <a-entity id="xray_tube" gltf-model="#xray_tube_asset" class="cantap rotatable interactable">
+      <a-entity id="xray_tube" gltf-model="#xray_tube_asset" class="cantap rotatable interactable" shadow="cast: true; receive: true">
       </a-entity>
 
       <a-entity
         id="detector_array"
         gltf-model="#detector_array_asset"
         class="cantap rotatable interactable"
+        shadow="cast: true; receive: true"
         metallic>
       </a-entity>
 
@@ -146,56 +147,64 @@
         id="collimators"
         gltf-model="#collimators_asset"
         class="cantap rotatable interactable"
+        shadow="cast: true; receive: true"
         metallic>
       </a-entity>
     </a-entity>
 
     <!-- Other models now also respond to gestures -->
-    <a-entity id="gantry_housing" gltf-model="#gantry_housing_asset" class="cantap interactable">
+    <a-entity id="gantry_housing" gltf-model="#gantry_housing_asset" class="cantap interactable" shadow="cast: true; receive: true">
     </a-entity>
 
-    <a-entity id="gantry_ring" gltf-model="#gantry_ring_asset" class="cantap interactable">
+    <a-entity id="gantry_ring" gltf-model="#gantry_ring_asset" class="cantap interactable" shadow="cast: true; receive: true">
     </a-entity>
 
     <a-entity
       id="slip_ring_assembly"
       gltf-model="#slip_ring_assembly_asset"
       class="cantap interactable"
+      shadow="cast: true; receive: true"
       slip-ring-assembly-metal>
     </a-entity>
 
-    <a-entity id="bore" gltf-model="#bore_asset" class="cantap interactable"></a-entity>
+    <a-entity id="bore" gltf-model="#bore_asset" class="cantap interactable" shadow="cast: true; receive: true"></a-entity>
     <a-entity
       id="patient_table"
       gltf-model="#patient_table_asset"
       class="cantap interactable"
+      shadow="cast: true; receive: true"
       fabric></a-entity>
     <a-entity
       id="control_console"
       gltf-model="#control_console_asset"
-      class="cantap interactable"></a-entity>
+      class="cantap interactable"
+      shadow="cast: true; receive: true"></a-entity>
     <a-entity
       id="image_reconstruction_computer"
       gltf-model="#image_reconstruction_computer_asset"
       class="cantap interactable"
+      shadow="cast: true; receive: true"
       dark-plastic>
     </a-entity>
     <a-entity
       id="cooling_system"
       gltf-model="#cooling_system_asset"
       class="cantap interactable"
+      shadow="cast: true; receive: true"
       light-plastic>
     </a-entity>
     <a-entity
       id="laser_positioning_lights"
       gltf-model="#laser_positioning_lights_asset"
       class="cantap interactable"
+      shadow="cast: true; receive: true"
       dark-plastic>
     </a-entity>
     <a-entity
       id="safety_and_intercom_systems"
       gltf-model="#safety_and_intercom_systems_asset"
-      class="cantap interactable"></a-entity>
+      class="cantap interactable"
+      shadow="cast: true; receive: true"></a-entity>
   </a-entity>
 
   <!-- Ground -->
@@ -206,6 +215,6 @@
     width="1000"
     height="1000"
     material="shader: shadow"
-    shadow>
+    shadow="receive: true">
   </a-plane>
 </a-scene>
