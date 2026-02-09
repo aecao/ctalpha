@@ -9,8 +9,8 @@ const updateButtonVisibility = () => {
   const backButton = document.getElementById('backbutton')
   const currentIndex = getSelectedIndex()
 
-  if (backButton) backButton.style.display = currentIndex > 0 ? 'inline-block' : 'none'
-  if (nextButton) nextButton.style.display = currentIndex < modelDescriptions.length - 1 ? 'inline-block' : 'none'
+  if (backButton) backButton.style.display = currentIndex > 0 ? 'block' : 'none'
+  if (nextButton) nextButton.style.display = currentIndex < modelDescriptions.length - 1 ? 'block' : 'none'
 }
 
 const nextButtonComponent = () => ({

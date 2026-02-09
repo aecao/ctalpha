@@ -179,6 +179,7 @@ a {
   justify-content: center;
   margin-top: auto;
   gap: 20px;
+  pointer-events: auto;
 }
 
 #nextbutton,
