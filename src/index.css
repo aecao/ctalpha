@@ -191,8 +191,17 @@ a {
   height: auto;
   border-radius: 20px;
   pointer-events: auto;
-  position: relative;
+  position: fixed;
+  bottom: 15vh;
   cursor: pointer;
+}
+
+#nextbutton {
+  right: 5vw;
+}
+
+#backbutton {
+  left: 5vw;
 }
 
 #nextbutton h2,
