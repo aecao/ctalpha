@@ -79,7 +79,7 @@ const config = {
   output: {
     filename: 'bundle.js',
     path: distPath,
-    publicPath: '/',
+    publicPath: '/ctalpha/',
   },
   plugins: [
     new HtmlWebpackPlugin({
