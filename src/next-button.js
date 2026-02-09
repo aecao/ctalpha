@@ -59,29 +59,53 @@ const nextButtonComponent = () => ({
       }
     }
 
-    const nextButton = document.getElementById('nextbutton')
-    nextButton.onclick = () => {
-      const currentIndex = getSelectedIndex()
-      if (currentIndex < modelDescriptions.length - 1) {
-        setSelectedIndex(currentIndex + 1)
-        const nextModelId = modelDescriptions[currentIndex + 1].Modelname
-        openPopup(getSelectedIndex(), modelDescriptions)
-        updateButtonVisibility()
-        updateModelVisibility(nextModelId)
+    const bindNavButtons = () => {
+      const nextButton = document.getElementById('nextbutton')
+      const backButton = document.getElementById('backbutton')
+
+      if (!nextButton || !backButton) return
+      if (nextButton.dataset.bound === 'true' && backButton.dataset.bound === 'true') return
+
+      const handleNext = (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        const currentIndex = getSelectedIndex()
+        const nextIndex = currentIndex < 0 ? 0 : currentIndex + 1
+        if (nextIndex < modelDescriptions.length) {
+          setSelectedIndex(nextIndex)
+          const nextModelId = modelDescriptions[nextIndex].Modelname
+          openPopup(getSelectedIndex(), modelDescriptions)
+          updateButtonVisibility()
+          updateModelVisibility(nextModelId)
+        }
       }
+
+      const handleBack = (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        const currentIndex = getSelectedIndex()
+        if (currentIndex > 0) {
+          const prevIndex = currentIndex - 1
+          setSelectedIndex(prevIndex)
+          const prevModelId = modelDescriptions[prevIndex].Modelname
+          openPopup(getSelectedIndex(), modelDescriptions)
+          updateButtonVisibility()
+          updateModelVisibility(prevModelId)
+        }
+      }
+
+      nextButton.addEventListener('click', handleNext)
+      nextButton.addEventListener('touchend', handleNext)
+      backButton.addEventListener('click', handleBack)
+      backButton.addEventListener('touchend', handleBack)
+
+      nextButton.dataset.bound = 'true'
+      backButton.dataset.bound = 'true'
     }
 
-    const backButton = document.getElementById('backbutton')
-    backButton.onclick = () => {
-      const currentIndex = getSelectedIndex()
-      if (currentIndex > 0) {
-        setSelectedIndex(currentIndex - 1)
-        const prevModelId = modelDescriptions[currentIndex - 1].Modelname
-        openPopup(getSelectedIndex(), modelDescriptions)
-        updateButtonVisibility()
-        updateModelVisibility(prevModelId)
-      }
-    }
+    bindNavButtons()
+    this.el.addEventListener('loaded', bindNavButtons)
+    document.addEventListener('DOMContentLoaded', bindNavButtons)
   },
 })
 
