@@ -36,22 +36,18 @@ export function setOpacity(modelElement, opacity, highlight = false) {
         emissiveIntensity: node.material.emissiveIntensity || 0,
       })
     }
-    const dimFactor = opacity
     node.material.transparent = false
     node.material.opacity = 1
     node.material.depthWrite = true
     if (highlight) {
-      node.material.color.set(0x00ff00)
-      // Add emissive glow to selected component
+      // Keep original color, only add emissive glow
+      node.material.color.copy(originalMaterials.get(node).color)
       if (node.material.emissive) {
         node.material.emissive.set(0x4488ff)
         node.material.emissiveIntensity = 0.4
       }
     } else {
       node.material.color.copy(originalMaterials.get(node).color)
-      if (dimFactor < 1) {
-        node.material.color.multiplyScalar(dimFactor)
-      }
       // Reset emissive for unselected components
       if (node.material.emissive) {
         node.material.emissive.copy(originalMaterials.get(node).emissive)
@@ -68,7 +64,7 @@ export function updateModelVisibility(selectedModelId) {
     } else if (el.id === 'xray_tube') {
       setOpacity(el, 1)
     } else {
-      setOpacity(el, 0.3)
+      setOpacity(el, 1)
     }
   })
 }
