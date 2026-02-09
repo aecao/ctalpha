@@ -36,10 +36,10 @@ export function setOpacity(modelElement, opacity, highlight = false) {
         emissiveIntensity: node.material.emissiveIntensity || 0,
       })
     }
-    const isTransparent = opacity < 1
-    node.material.transparent = isTransparent
-    node.material.opacity = opacity
-    node.material.depthWrite = !isTransparent
+    const dimFactor = opacity
+    node.material.transparent = false
+    node.material.opacity = 1
+    node.material.depthWrite = true
     if (highlight) {
       node.material.color.set(0x00ff00)
       // Add emissive glow to selected component
@@ -49,6 +49,9 @@ export function setOpacity(modelElement, opacity, highlight = false) {
       }
     } else {
       node.material.color.copy(originalMaterials.get(node).color)
+      if (dimFactor < 1) {
+        node.material.color.multiplyScalar(dimFactor)
+      }
       // Reset emissive for unselected components
       if (node.material.emissive) {
         node.material.emissive.copy(originalMaterials.get(node).emissive)
