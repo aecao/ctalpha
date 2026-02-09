@@ -12,13 +12,6 @@ function setSelectedIndex(index) {
 const modelDescriptions =
 [
   {
-    'Index': '16',
-    'Modelname': 'gantry_housing',
-    'Title': 'Gantry Housing',
-    'Description': 'The gantry houses the rotating X-ray tube and detectors, as well as control electronics. Its open circular aperture is where the patient table is positioned. The gantry tilts in some designs, allowing angled imaging to optimize anatomy visualization.',
-  },
-
-  {
     'Index': '0',
     'Modelname': 'gantry_housing',
     'Title': 'Gantry Housing',
