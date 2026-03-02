@@ -57,14 +57,14 @@
   xrextras-loading
   xrextras-runtime-error
   ssao
-    renderer="colorManagement: true; physicallyCorrectLights: true; exposure: 1.1"
+    renderer="colorManagement: true; physicallyCorrectLights: true; exposure: 0.95"
   xrweb="allowedDevices: any;
-      defaultEnvironmentFogIntensity: 0.15;
+      defaultEnvironmentFogIntensity: 0.08;
           defaultEnvironmentFloorTexture: #groundTex;
-      defaultEnvironmentFloorColor: #1f2328;
-      defaultEnvironmentSkyBottomColor: #10161f;
-      defaultEnvironmentSkyTopColor: #2a3444;
-      defaultEnvironmentSkyGradientStrength: 0.4;
+      defaultEnvironmentFloorColor: #13171d;
+      defaultEnvironmentSkyBottomColor: #06080d;
+      defaultEnvironmentSkyTopColor: #1a2230;
+      defaultEnvironmentSkyGradientStrength: 0.28;
           scale: absolute">
   <a-assets>
     <a-asset-item id="hospital_env" src="assets/hospital_env.exr"></a-asset-item>
@@ -100,24 +100,24 @@
 
   <!-- Lights -->
   <a-entity
-    light="type: directional; intensity: 3.2; castShadow: true; shadowMapHeight: 4096; shadowMapWidth: 4096; shadowRadius: 1.2; shadowBias: -0.00015; target: #group"
+    light="type: directional; intensity: 4.1; castShadow: true; shadowMapHeight: 4096; shadowMapWidth: 4096; shadowRadius: 0.85; shadowBias: -0.00012; target: #group"
     xrextras-attach="target: group; offset: -8 15 4"
     position="-20 20 20">
   </a-entity>
-  <a-entity light="type: ambient; intensity: 0.15; color: #ffffff"></a-entity>
+  <a-entity light="type: ambient; intensity: 0.03; color: #f2f6ff"></a-entity>
 
   <a-entity
     light="type: hemisphere;
-         intensity: 0.2;
-         groundColor: #30363f;
-         color: #6e7f99">
+      intensity: 0.06;
+      groundColor: #121720;
+      color: #415069">
   </a-entity>
 
   <a-entity
     light="type: directional;
-          intensity: 1.1;
-          color: #d5e6ff"
-    position="8 4 -6">
+          intensity: 1.5;
+          color: #bfd9ff"
+    position="10 5 -7">
   </a-entity>
 
   <!-- Main manipulatable group -->
