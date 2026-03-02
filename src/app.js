@@ -329,6 +329,53 @@ AFRAME.registerComponent('fabric', {
   },
 })
 
+const detectLaserTipUv = (geometry) => {
+  const positionAttr = geometry?.attributes?.position
+  const uvAttr = geometry?.attributes?.uv
+  if (!positionAttr || !uvAttr || positionAttr.count === 0 || uvAttr.count === 0) return null
+
+  const count = Math.min(positionAttr.count, uvAttr.count)
+  let centroidX = 0
+  let centroidY = 0
+  let centroidZ = 0
+
+  for (let index = 0; index < count; index += 1) {
+    centroidX += positionAttr.getX(index)
+    centroidY += positionAttr.getY(index)
+    centroidZ += positionAttr.getZ(index)
+  }
+
+  centroidX /= count
+  centroidY /= count
+  centroidZ /= count
+
+  let tipIndex = 0
+  let minDistanceSq = Number.POSITIVE_INFINITY
+
+  for (let index = 0; index < count; index += 1) {
+    const dx = positionAttr.getX(index) - centroidX
+    const dy = positionAttr.getY(index) - centroidY
+    const dz = positionAttr.getZ(index) - centroidZ
+    const distanceSq = dx * dx + dy * dy + dz * dz
+    if (distanceSq < minDistanceSq) {
+      minDistanceSq = distanceSq
+      tipIndex = index
+    }
+  }
+
+  const tipUv = new THREE.Vector2(uvAttr.getX(tipIndex), uvAttr.getY(tipIndex))
+  let maxUvRadius = 0.0
+
+  for (let index = 0; index < count; index += 1) {
+    const du = uvAttr.getX(index) - tipUv.x
+    const dv = uvAttr.getY(index) - tipUv.y
+    const uvDistance = Math.sqrt(du * du + dv * dv)
+    if (uvDistance > maxUvRadius) maxUvRadius = uvDistance
+  }
+
+  return {tipUv, maxUvRadius}
+}
+
 AFRAME.registerComponent('laser-surface', {
   schema: {
     innerColor: {type: 'color', default: '#ff2a2a'},
@@ -336,6 +383,8 @@ AFRAME.registerComponent('laser-surface', {
     opacity: {type: 'number', default: 0.72},
     intensity: {type: 'number', default: 2.1},
     alphaPower: {type: 'number', default: 1.8},
+    autoDetectTip: {type: 'boolean', default: true},
+    autoOuterRadius: {type: 'boolean', default: true},
     centerX: {type: 'number', default: 0.5},
     centerY: {type: 'number', default: 0.5},
     innerRadius: {type: 'number', default: 0.0},
@@ -354,6 +403,21 @@ AFRAME.registerComponent('laser-surface', {
 
         node.raycast = () => null
 
+        let centerX = this.data.centerX
+        let centerY = this.data.centerY
+        let outerRadius = this.data.outerRadius
+
+        const tipData = detectLaserTipUv(node.geometry)
+        if (tipData) {
+          if (this.data.autoDetectTip) {
+            centerX = tipData.tipUv.x
+            centerY = tipData.tipUv.y
+          }
+          if (this.data.autoOuterRadius && tipData.maxUvRadius > 0.0001) {
+            outerRadius = tipData.maxUvRadius
+          }
+        }
+
         node.material = new THREE.ShaderMaterial({
           uniforms: {
             uInnerColor: {value: innerColor},
@@ -361,9 +425,9 @@ AFRAME.registerComponent('laser-surface', {
             uOpacity: {value: this.data.opacity},
             uIntensity: {value: this.data.intensity},
             uAlphaPower: {value: this.data.alphaPower},
-            uCenter: {value: new THREE.Vector2(this.data.centerX, this.data.centerY)},
+            uCenter: {value: new THREE.Vector2(centerX, centerY)},
             uInnerRadius: {value: this.data.innerRadius},
-            uOuterRadius: {value: this.data.outerRadius},
+            uOuterRadius: {value: outerRadius},
           },
           vertexShader: `
             varying vec2 vUv;
