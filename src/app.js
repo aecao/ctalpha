@@ -241,7 +241,7 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         applyHybridMetalMaterial(node, {
           color: '#f0f0f0',
           roughness: 0.045,
-          envMapIntensity: 16.0,
+          envMapIntensity: 24.0,
           rimStrength: 0.52,
           rimPower: 1.8,
         })
@@ -262,7 +262,7 @@ AFRAME.registerComponent('metallic', {
         applyHybridMetalMaterial(node, {
           color: '#e4e4e4',
           roughness: 0.055,
-          envMapIntensity: 15.0,
+          envMapIntensity: 22.0,
           rimStrength: 0.45,
           rimPower: 1.9,
         })
