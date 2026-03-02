@@ -176,11 +176,11 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         node.material = node.material.clone()
 
         // Medical-grade metallic finish
-        node.material.color.set('#4A4A4A')
-        node.material.metalness = 0.95
-        node.material.roughness = 0.025
+        node.material.color.set('#8A8A8A')
+        node.material.metalness = 1.0
+        node.material.roughness = 0.015
         node.material.emissive.set('#000000')
-        applyEnvMapToMaterial(node.material, 5.2)
+        applyEnvMapToMaterial(node.material, 5.9)
         node.material.needsUpdate = true
       })
     })
@@ -201,11 +201,11 @@ AFRAME.registerComponent('metallic', {
         node.material = node.material.clone()
 
         // Neutral metallic appearance
-        node.material.color.set('#3F3F3F')
-        node.material.metalness = 0.92
-        node.material.roughness = 0.04
+        node.material.color.set('#7A7A7A')
+        node.material.metalness = 0.98
+        node.material.roughness = 0.022
         node.material.emissive.set('#000000')
-        applyEnvMapToMaterial(node.material, 4.8)
+        applyEnvMapToMaterial(node.material, 5.4)
         node.material.needsUpdate = true
       })
     })
@@ -308,10 +308,10 @@ AFRAME.registerComponent('fabric', {
 
 AFRAME.registerComponent('laser-surface', {
   schema: {
-    innerColor: {type: 'color', default: '#ff3b1f'},
-    outerColor: {type: 'color', default: '#ff7a33'},
-    opacity: {type: 'number', default: 0.95},
-    intensity: {type: 'number', default: 4.5},
+    innerColor: {type: 'color', default: '#ff2a2a'},
+    outerColor: {type: 'color', default: '#7a0000'},
+    opacity: {type: 'number', default: 0.72},
+    intensity: {type: 'number', default: 2.1},
     alphaPower: {type: 'number', default: 1.8},
     flipGradient: {type: 'boolean', default: false},
   },
@@ -356,7 +356,7 @@ AFRAME.registerComponent('laser-surface', {
               float fade = pow(1.0 - t, uAlphaPower);
               float core = smoothstep(0.45, 0.0, t);
               vec3 baseColor = mix(uOuterColor, uInnerColor, core);
-              vec3 glow = baseColor * (uIntensity * (0.55 + core * 1.7));
+              vec3 glow = baseColor * (uIntensity * (0.35 + core * 1.1));
               gl_FragColor = vec4(glow, fade * uOpacity);
             }
           `,
