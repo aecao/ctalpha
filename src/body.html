@@ -57,14 +57,14 @@
   xrextras-loading
   xrextras-runtime-error
   ssao
-    renderer="colorManagement: true; physicallyCorrectLights: true; exposure: 0.95"
+    renderer="colorManagement: true; physicallyCorrectLights: true; exposure: 0.72"
   xrweb="allowedDevices: any;
-      defaultEnvironmentFogIntensity: 0.08;
+      defaultEnvironmentFogIntensity: 0.03;
           defaultEnvironmentFloorTexture: #groundTex;
-      defaultEnvironmentFloorColor: #13171d;
-      defaultEnvironmentSkyBottomColor: #06080d;
-      defaultEnvironmentSkyTopColor: #1a2230;
-      defaultEnvironmentSkyGradientStrength: 0.28;
+      defaultEnvironmentFloorColor: #090b0f;
+      defaultEnvironmentSkyBottomColor: #010204;
+      defaultEnvironmentSkyTopColor: #0e1420;
+      defaultEnvironmentSkyGradientStrength: 0.18;
           scale: absolute">
   <a-assets>
     <a-asset-item id="hospital_env" src="assets/hospital_env.exr"></a-asset-item>
@@ -104,13 +104,13 @@
     xrextras-attach="target: group; offset: -8 15 4"
     position="-20 20 20">
   </a-entity>
-  <a-entity light="type: ambient; intensity: 0.03; color: #f2f6ff"></a-entity>
+  <a-entity light="type: ambient; intensity: 0.012; color: #e8f0ff"></a-entity>
 
   <a-entity
     light="type: hemisphere;
-      intensity: 0.06;
-      groundColor: #121720;
-      color: #415069">
+      intensity: 0.03;
+      groundColor: #090d15;
+      color: #2e3a4f">
   </a-entity>
 
   <a-entity
