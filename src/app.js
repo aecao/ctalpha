@@ -162,102 +162,63 @@ AFRAME.registerComponent('clamp-group', {
   },
 })
 
-const METALLIC_LAYER = 1
-let metallicSpecularRigInitialized = false
+const addMetalRimBoost = (material, rimStrength, rimPower) => {
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uMetalRimStrength = {value: rimStrength}
+    shader.uniforms.uMetalRimPower = {value: rimPower}
 
-const enableMetallicLayerOnCamera = (sceneEl) => {
-  if (!sceneEl) return
-
-  const activeCamera = sceneEl.camera
-  if (activeCamera?.layers) {
-    activeCamera.layers.enable(METALLIC_LAYER)
-  }
-
-  const cameraEl = sceneEl.querySelector('#camera')
-  const cameraObj = cameraEl?.getObject3D('camera')
-  if (cameraObj?.layers) {
-    cameraObj.layers.enable(METALLIC_LAYER)
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+uniform float uMetalRimStrength;
+uniform float uMetalRimPower;`
+      )
+      .replace(
+        '#include <output_fragment>',
+        `
+float metalRim = pow(1.0 - max(dot(normalize(vNormal), normalize(vViewPosition)), 0.0), uMetalRimPower);
+outgoingLight += vec3(metalRim * uMetalRimStrength);
+#include <output_fragment>
+`
+      )
   }
 }
 
-const ensureMetallicSpecularRig = (sceneEl) => {
-  if (!sceneEl || metallicSpecularRigInitialized || !sceneEl.object3D) return
+const applyHybridMetalMaterial = (node, config) => {
+  if (!node.material) return
 
-  const rig = new THREE.Group()
-  rig.name = 'metallic-specular-rig'
+  node.material = node.material.clone()
+  node.material.map = null
+  node.material.emissiveMap = null
+  node.material.metalnessMap = null
+  node.material.roughnessMap = null
+  node.material.color.set(config.color)
+  node.material.metalness = 0.98
+  node.material.roughness = config.roughness
+  node.material.emissive.set('#111111')
+  node.material.emissiveIntensity = 0.03
 
-  const keyRim = new THREE.DirectionalLight(0xffffff, 1.6)
-  keyRim.position.set(6, 5, 8)
-  keyRim.target.position.set(0, 0, 0)
-  keyRim.layers.set(METALLIC_LAYER)
-  keyRim.target.layers.set(METALLIC_LAYER)
-
-  const coolRim = new THREE.DirectionalLight(0xbcd6ff, 1.15)
-  coolRim.position.set(-7, 4, -6)
-  coolRim.target.position.set(0, 0, 0)
-  coolRim.layers.set(METALLIC_LAYER)
-  coolRim.target.layers.set(METALLIC_LAYER)
-
-  const cameraFill = new THREE.PointLight(0xffffff, 0.85, 45, 2)
-  cameraFill.position.set(0, 3, 5)
-  cameraFill.layers.set(METALLIC_LAYER)
-
-  rig.add(keyRim)
-  rig.add(keyRim.target)
-  rig.add(coolRim)
-  rig.add(coolRim.target)
-  rig.add(cameraFill)
-  sceneEl.object3D.add(rig)
-
-  metallicSpecularRigInitialized = true
-  enableMetallicLayerOnCamera(sceneEl)
-
-  sceneEl.addEventListener('camera-set-active', () => {
-    enableMetallicLayerOnCamera(sceneEl)
-  })
-}
-
-const applyExtremeMetalMaterial = (node, config) => {
-  const previousMaterial = node.material
-  if (!previousMaterial) return
-
-  node.material = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(config.color),
-    metalness: 1.0,
-    roughness: config.roughness,
-    clearcoat: 1.0,
-    clearcoatRoughness: config.clearcoatRoughness,
-    emissive: new THREE.Color(config.emissive),
-    emissiveIntensity: config.emissiveIntensity,
-    transparent: previousMaterial.transparent === true,
-    opacity: typeof previousMaterial.opacity === 'number' ? previousMaterial.opacity : 1,
-    side: previousMaterial.side,
-    depthWrite: previousMaterial.depthWrite,
-    depthTest: previousMaterial.depthTest,
-  })
-
+  addMetalRimBoost(node.material, config.rimStrength, config.rimPower)
   applyEnvMapToMaterial(node.material, config.envMapIntensity)
-  node.layers.enable(METALLIC_LAYER)
   node.material.needsUpdate = true
 }
 
 // Metallic finish for gantry ring
 AFRAME.registerComponent('slip-ring-assembly-metal', {
   init() {
-    ensureMetallicSpecularRig(this.el.sceneEl)
     this.el.addEventListener('model-loaded', () => {
       const mesh = this.el.getObject3D('mesh')
       if (!mesh) return
 
       mesh.traverse((node) => {
         if (!node.isMesh) return
-        applyExtremeMetalMaterial(node, {
-          color: '#f2f2f2',
-          roughness: 0.035,
-          clearcoatRoughness: 0.015,
-          emissive: '#060606',
-          emissiveIntensity: 0.02,
-          envMapIntensity: 14.0,
+        applyHybridMetalMaterial(node, {
+          color: '#f0f0f0',
+          roughness: 0.045,
+          envMapIntensity: 11.5,
+          rimStrength: 0.52,
+          rimPower: 1.8,
         })
       })
     })
@@ -267,20 +228,18 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
 // General metallic finish component for other models
 AFRAME.registerComponent('metallic', {
   init() {
-    ensureMetallicSpecularRig(this.el.sceneEl)
     this.el.addEventListener('model-loaded', () => {
       const mesh = this.el.getObject3D('mesh')
       if (!mesh) return
 
       mesh.traverse((node) => {
         if (!node.isMesh && !node.isSkinnedMesh) return
-        applyExtremeMetalMaterial(node, {
-          color: '#e8e8e8',
-          roughness: 0.045,
-          clearcoatRoughness: 0.02,
-          emissive: '#070707',
-          emissiveIntensity: 0.02,
-          envMapIntensity: 12.5,
+        applyHybridMetalMaterial(node, {
+          color: '#e4e4e4',
+          roughness: 0.055,
+          envMapIntensity: 10.8,
+          rimStrength: 0.45,
+          rimPower: 1.9,
         })
       })
     })
