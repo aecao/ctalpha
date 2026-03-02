@@ -454,6 +454,7 @@ AFRAME.registerComponent('laser-surface', {
     opacity: {type: 'number', default: 0.72},
     intensity: {type: 'number', default: 2.1},
     alphaPower: {type: 'number', default: 1.8},
+    gradientAxis: {type: 'string', default: 'y'},
     flipGradient: {type: 'boolean', default: false},
   },
   init() {
@@ -476,6 +477,7 @@ AFRAME.registerComponent('laser-surface', {
             uOpacity: {value: this.data.opacity},
             uIntensity: {value: this.data.intensity},
             uAlphaPower: {value: this.data.alphaPower},
+            uUseX: {value: this.data.gradientAxis === 'x' ? 1.0 : 0.0},
             uFlip: {value: this.data.flipGradient ? 1.0 : 0.0},
           },
           vertexShader: `
@@ -491,11 +493,13 @@ AFRAME.registerComponent('laser-surface', {
             uniform float uOpacity;
             uniform float uIntensity;
             uniform float uAlphaPower;
+            uniform float uUseX;
             uniform float uFlip;
             varying vec2 vUv;
 
             void main() {
-              float t = clamp(mix(vUv.y, 1.0 - vUv.y, uFlip), 0.0, 1.0);
+              float axisValue = mix(vUv.y, vUv.x, uUseX);
+              float t = clamp(mix(axisValue, 1.0 - axisValue, uFlip), 0.0, 1.0);
               float fade = pow(1.0 - t, uAlphaPower);
               float core = smoothstep(0.45, 0.0, t);
               vec3 baseColor = mix(uOuterColor, uInnerColor, core);
