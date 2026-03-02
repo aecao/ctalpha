@@ -382,71 +382,27 @@ AFRAME.registerComponent('fabric', {
   },
 })
 
-const getOriginWorldFromTarget = (targetEl) => {
-  if (!targetEl || !targetEl.object3D) return null
-  const worldPosition = new THREE.Vector3()
-  targetEl.object3D.getWorldPosition(worldPosition)
-  return worldPosition
-}
-
-const computeOuterRadiusFromOrigin = (geometry, originLocal) => {
-  const positionAttr = geometry?.attributes?.position
-  if (!positionAttr || positionAttr.count === 0) return 1.0
-
-  let maxDistance = 0.0
-  for (let index = 0; index < positionAttr.count; index += 1) {
-    const dx = positionAttr.getX(index) - originLocal.x
-    const dy = positionAttr.getY(index) - originLocal.y
-    const dz = positionAttr.getZ(index) - originLocal.z
-    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
-    if (distance > maxDistance) maxDistance = distance
-  }
-
-  return maxDistance > 0.0001 ? maxDistance : 1.0
-}
-
 AFRAME.registerComponent('laser-surface', {
   schema: {
     innerColor: {type: 'color', default: '#ff2a2a'},
     outerColor: {type: 'color', default: '#7a0000'},
-    opacity: {type: 'number', default: 0.95},
-    intensity: {type: 'number', default: 4.8},
+    opacity: {type: 'number', default: 0.72},
+    intensity: {type: 'number', default: 2.1},
     alphaPower: {type: 'number', default: 1.8},
-    originTarget: {type: 'selector'},
-    autoOuterRadius: {type: 'boolean', default: true},
-    outerRadiusScale: {type: 'number', default: 1.0},
-    innerRadius: {type: 'number', default: 0.0},
-    outerRadius: {type: 'number', default: 1.0},
+    flipGradient: {type: 'boolean', default: false},
   },
   init() {
     this.el.addEventListener('model-loaded', () => {
       const mesh = this.el.getObject3D('mesh')
       if (!mesh) return
 
-      if (!this.data.originTarget) {
-        console.warn('laser-surface: originTarget is required for correct gradient origin')
-        return
-      }
-
       const innerColor = new THREE.Color(this.data.innerColor)
       const outerColor = new THREE.Color(this.data.outerColor)
-      const targetOriginWorld = getOriginWorldFromTarget(this.data.originTarget)
-      if (!targetOriginWorld) {
-        console.warn('laser-surface: unable to resolve originTarget world position')
-        return
-      }
 
       mesh.traverse((node) => {
         if (!node.isMesh) return
 
         node.raycast = () => null
-
-        const originLocal = node.worldToLocal(targetOriginWorld.clone())
-        let outerRadius = this.data.outerRadius
-
-        if (this.data.autoOuterRadius) {
-          outerRadius = computeOuterRadiusFromOrigin(node.geometry, originLocal) * this.data.outerRadiusScale
-        }
 
         node.material = new THREE.ShaderMaterial({
           uniforms: {
@@ -455,14 +411,12 @@ AFRAME.registerComponent('laser-surface', {
             uOpacity: {value: this.data.opacity},
             uIntensity: {value: this.data.intensity},
             uAlphaPower: {value: this.data.alphaPower},
-            uOrigin: {value: originLocal.clone()},
-            uInnerRadius: {value: this.data.innerRadius},
-            uOuterRadius: {value: outerRadius},
+            uFlip: {value: this.data.flipGradient ? 1.0 : 0.0},
           },
           vertexShader: `
-            varying vec3 vLocalPos;
+            varying vec2 vUv;
             void main() {
-              vLocalPos = position;
+              vUv = uv;
               gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
           `,
@@ -472,18 +426,15 @@ AFRAME.registerComponent('laser-surface', {
             uniform float uOpacity;
             uniform float uIntensity;
             uniform float uAlphaPower;
-            uniform vec3 uOrigin;
-            uniform float uInnerRadius;
-            uniform float uOuterRadius;
-            varying vec3 vLocalPos;
+            uniform float uFlip;
+            varying vec2 vUv;
 
             void main() {
-              float radius = distance(vLocalPos, uOrigin);
-              float t = clamp((radius - uInnerRadius) / max(0.0001, uOuterRadius - uInnerRadius), 0.0, 1.0);
+              float t = clamp(mix(vUv.y, 1.0 - vUv.y, uFlip), 0.0, 1.0);
               float fade = pow(1.0 - t, uAlphaPower);
               float core = smoothstep(0.45, 0.0, t);
               vec3 baseColor = mix(uOuterColor, uInnerColor, core);
-              vec3 glow = baseColor * (uIntensity * (0.75 + core * 2.0));
+              vec3 glow = baseColor * (uIntensity * (0.35 + core * 1.1));
               gl_FragColor = vec4(glow, fade * uOpacity);
             }
           `,
