@@ -180,12 +180,12 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         node.material.emissiveMap = null
         node.material.metalnessMap = null
         node.material.roughnessMap = null
-        node.material.color.set('#d4d4d4')
-        node.material.metalness = 0.82
-        node.material.roughness = 0.16
-        node.material.emissive.set('#1a1a1a')
-        node.material.emissiveIntensity = 0.16
-        applyEnvMapToMaterial(node.material, 5.8)
+        node.material.color.set('#e5e5e5')
+        node.material.metalness = 0.9
+        node.material.roughness = 0.11
+        node.material.emissive.set('#1f1f1f')
+        node.material.emissiveIntensity = 0.1
+        applyEnvMapToMaterial(node.material, 6.9)
         node.material.needsUpdate = true
       })
     })
@@ -210,12 +210,12 @@ AFRAME.registerComponent('metallic', {
         node.material.emissiveMap = null
         node.material.metalnessMap = null
         node.material.roughnessMap = null
-        node.material.color.set('#c6c6c6')
-        node.material.metalness = 0.8
-        node.material.roughness = 0.18
-        node.material.emissive.set('#171717')
-        node.material.emissiveIntensity = 0.14
-        applyEnvMapToMaterial(node.material, 5.4)
+        node.material.color.set('#d8d8d8')
+        node.material.metalness = 0.88
+        node.material.roughness = 0.13
+        node.material.emissive.set('#1a1a1a')
+        node.material.emissiveIntensity = 0.08
+        applyEnvMapToMaterial(node.material, 6.4)
         node.material.needsUpdate = true
       })
     })
@@ -377,6 +377,22 @@ const findGradientOriginNode = (rootObject, originNodeName) => {
   return markerNode
 }
 
+const getOriginWorldFromTarget = (targetEl, originNodeName) => {
+  if (!targetEl || !targetEl.object3D) return null
+  const root = targetEl.object3D
+
+  const exactMarker = findGradientOriginNode(root, originNodeName)
+  if (exactMarker) {
+    const markerPosition = new THREE.Vector3()
+    exactMarker.getWorldPosition(markerPosition)
+    return markerPosition
+  }
+
+  const fallbackPosition = new THREE.Vector3()
+  root.getWorldPosition(fallbackPosition)
+  return fallbackPosition
+}
+
 const computeOuterRadiusFromOrigin = (geometry, originLocal) => {
   const positionAttr = geometry?.attributes?.position
   if (!positionAttr || positionAttr.count === 0) return 1.0
@@ -400,6 +416,7 @@ AFRAME.registerComponent('laser-surface', {
     opacity: {type: 'number', default: 0.72},
     intensity: {type: 'number', default: 2.1},
     alphaPower: {type: 'number', default: 1.8},
+    originTarget: {type: 'selector'},
     originNodeName: {type: 'string', default: 'gradient_origin'},
     useMarkerOrigin: {type: 'boolean', default: true},
     autoOuterRadius: {type: 'boolean', default: true},
@@ -413,12 +430,15 @@ AFRAME.registerComponent('laser-surface', {
 
       const innerColor = new THREE.Color(this.data.innerColor)
       const outerColor = new THREE.Color(this.data.outerColor)
-      const markerNode = this.data.useMarkerOrigin
+      const targetOriginWorld = this.data.originTarget
+        ? getOriginWorldFromTarget(this.data.originTarget, this.data.originNodeName)
+        : null
+      const markerNode = this.data.useMarkerOrigin && !targetOriginWorld
         ? findGradientOriginNode(mesh, this.data.originNodeName)
         : null
 
-      const markerWorld = new THREE.Vector3()
-      if (markerNode) markerNode.getWorldPosition(markerWorld)
+      const markerWorld = targetOriginWorld ? targetOriginWorld.clone() : new THREE.Vector3()
+      if (!targetOriginWorld && markerNode) markerNode.getWorldPosition(markerWorld)
 
       mesh.traverse((node) => {
         if (!node.isMesh) return
@@ -430,7 +450,9 @@ AFRAME.registerComponent('laser-surface', {
 
         node.raycast = () => null
 
-        const originWorld = markerNode ? markerWorld.clone() : node.getWorldPosition(new THREE.Vector3())
+        const originWorld = (targetOriginWorld || markerNode)
+          ? markerWorld.clone()
+          : node.getWorldPosition(new THREE.Vector3())
         const originLocal = node.worldToLocal(originWorld)
         let outerRadius = this.data.outerRadius
 

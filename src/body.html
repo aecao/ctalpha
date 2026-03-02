@@ -87,6 +87,9 @@
     <a-asset-item id="laser_surface_1_asset" src="assets/laser1.glb"></a-asset-item>
     <a-asset-item id="laser_surface_2_asset" src="assets/laser2.glb"></a-asset-item>
     <a-asset-item id="laser_surface_3_asset" src="assets/laser3.glb"></a-asset-item>
+    <a-asset-item id="laser_origin_1_asset" src="assets/laserorigin1.glb"></a-asset-item>
+    <a-asset-item id="laser_origin_2_asset" src="assets/laserorigin2.glb"></a-asset-item>
+    <a-asset-item id="laser_origin_3_asset" src="assets/laserorigin3.glb"></a-asset-item>
     <a-asset-item id="screen_asset" src="assets/screen.glb"></a-asset-item>
     <a-asset-item
       id="safety_and_intercom_systems_asset"
@@ -223,20 +226,23 @@
       id="laser_surface_1"
       gltf-model="#laser_surface_1_asset"
       class="cantap interactable"
-      laser-surface>
+      laser-surface="originTarget: #laser_origin_1">
     </a-entity>
     <a-entity
       id="laser_surface_2"
       gltf-model="#laser_surface_2_asset"
       class="cantap interactable"
-      laser-surface>
+      laser-surface="originTarget: #laser_origin_2">
     </a-entity>
     <a-entity
       id="laser_surface_3"
       gltf-model="#laser_surface_3_asset"
       class="cantap interactable"
-      laser-surface>
+      laser-surface="originTarget: #laser_origin_3">
     </a-entity>
+    <a-entity id="laser_origin_1" gltf-model="#laser_origin_1_asset" visible="false"></a-entity>
+    <a-entity id="laser_origin_2" gltf-model="#laser_origin_2_asset" visible="false"></a-entity>
+    <a-entity id="laser_origin_3" gltf-model="#laser_origin_3_asset" visible="false"></a-entity>
     <a-entity
       id="screen"
       gltf-model="#screen_asset"
