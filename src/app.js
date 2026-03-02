@@ -317,9 +317,9 @@ AFRAME.registerComponent('laser-positioning-dark', {
 
 AFRAME.registerComponent('screen-glow', {
   schema: {
-    color: {type: 'color', default: '#223344'},
-    emissive: {type: 'color', default: '#7fd0ff'},
-    emissiveIntensity: {type: 'number', default: 2.6},
+    color: {type: 'color', default: '#ffffff'},
+    emissive: {type: 'color', default: '#ffffff'},
+    emissiveIntensity: {type: 'number', default: 1.8},
     roughness: {type: 'number', default: 0.08},
   },
   init() {
@@ -330,12 +330,29 @@ AFRAME.registerComponent('screen-glow', {
       mesh.traverse((node) => {
         if (!node.isMesh) return
 
-        node.material = node.material.clone()
-        node.material.color.set(this.data.color)
-        node.material.metalness = 0.0
-        node.material.roughness = this.data.roughness
-        node.material.emissive.set(this.data.emissive)
-        node.material.emissiveIntensity = this.data.emissiveIntensity
+        const previousMaterial = node.material
+        const screenMap = previousMaterial.map || previousMaterial.emissiveMap || null
+
+        if (screenMap) {
+          screenMap.encoding = THREE.sRGBEncoding
+          screenMap.needsUpdate = true
+        }
+
+        node.material = new THREE.MeshStandardMaterial({
+          map: screenMap,
+          color: new THREE.Color(this.data.color),
+          metalness: 0.0,
+          roughness: this.data.roughness,
+          emissive: new THREE.Color(this.data.emissive),
+          emissiveMap: screenMap,
+          emissiveIntensity: this.data.emissiveIntensity,
+          transparent: previousMaterial.transparent === true,
+          opacity: typeof previousMaterial.opacity === 'number' ? previousMaterial.opacity : 1,
+          side: previousMaterial.side,
+          depthWrite: previousMaterial.depthWrite,
+        })
+
+        node.material.toneMapped = false
         applyEnvMapToMaterial(node.material, 0.35)
         node.material.needsUpdate = true
       })
