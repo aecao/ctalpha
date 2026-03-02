@@ -178,9 +178,9 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         // Medical-grade metallic finish
         node.material.color.set('#4A4A4A')
         node.material.metalness = 0.95
-        node.material.roughness = 0.04
+        node.material.roughness = 0.025
         node.material.emissive.set('#000000')
-        applyEnvMapToMaterial(node.material, 4.6)
+        applyEnvMapToMaterial(node.material, 5.2)
         node.material.needsUpdate = true
       })
     })
@@ -203,9 +203,9 @@ AFRAME.registerComponent('metallic', {
         // Neutral metallic appearance
         node.material.color.set('#3F3F3F')
         node.material.metalness = 0.92
-        node.material.roughness = 0.06
+        node.material.roughness = 0.04
         node.material.emissive.set('#000000')
-        applyEnvMapToMaterial(node.material, 4.2)
+        applyEnvMapToMaterial(node.material, 4.8)
         node.material.needsUpdate = true
       })
     })
@@ -228,8 +228,8 @@ AFRAME.registerComponent('light-plastic', {
         // plastic finish
         node.material.color.set('#BBCEED')
         node.material.metalness = 0.0
-        node.material.roughness = 0.16
-        applyEnvMapToMaterial(node.material, 1.45)
+        node.material.roughness = 0.12
+        applyEnvMapToMaterial(node.material, 1.8)
         node.material.needsUpdate = true
       })
     })
@@ -252,8 +252,8 @@ AFRAME.registerComponent('med-plastic', {
         // plastic finish
         node.material.color.set('#465369')
         node.material.metalness = 0.0
-        node.material.roughness = 0.16
-        applyEnvMapToMaterial(node.material, 1.45)
+        node.material.roughness = 0.12
+        applyEnvMapToMaterial(node.material, 1.8)
         node.material.needsUpdate = true
       })
     })
@@ -276,8 +276,8 @@ AFRAME.registerComponent('dark-plastic', {
         // plastic finish
         node.material.color.set('#09090A')
         node.material.metalness = 0.0
-        node.material.roughness = 0.16
-        applyEnvMapToMaterial(node.material, 1.45)
+        node.material.roughness = 0.12
+        applyEnvMapToMaterial(node.material, 1.8)
         node.material.needsUpdate = true
       })
     })
