@@ -162,31 +162,103 @@ AFRAME.registerComponent('clamp-group', {
   },
 })
 
+const METALLIC_LAYER = 1
+let metallicSpecularRigInitialized = false
+
+const enableMetallicLayerOnCamera = (sceneEl) => {
+  if (!sceneEl) return
+
+  const activeCamera = sceneEl.camera
+  if (activeCamera?.layers) {
+    activeCamera.layers.enable(METALLIC_LAYER)
+  }
+
+  const cameraEl = sceneEl.querySelector('#camera')
+  const cameraObj = cameraEl?.getObject3D('camera')
+  if (cameraObj?.layers) {
+    cameraObj.layers.enable(METALLIC_LAYER)
+  }
+}
+
+const ensureMetallicSpecularRig = (sceneEl) => {
+  if (!sceneEl || metallicSpecularRigInitialized || !sceneEl.object3D) return
+
+  const rig = new THREE.Group()
+  rig.name = 'metallic-specular-rig'
+
+  const keyRim = new THREE.DirectionalLight(0xffffff, 1.6)
+  keyRim.position.set(6, 5, 8)
+  keyRim.target.position.set(0, 0, 0)
+  keyRim.layers.set(METALLIC_LAYER)
+  keyRim.target.layers.set(METALLIC_LAYER)
+
+  const coolRim = new THREE.DirectionalLight(0xbcd6ff, 1.15)
+  coolRim.position.set(-7, 4, -6)
+  coolRim.target.position.set(0, 0, 0)
+  coolRim.layers.set(METALLIC_LAYER)
+  coolRim.target.layers.set(METALLIC_LAYER)
+
+  const cameraFill = new THREE.PointLight(0xffffff, 0.85, 45, 2)
+  cameraFill.position.set(0, 3, 5)
+  cameraFill.layers.set(METALLIC_LAYER)
+
+  rig.add(keyRim)
+  rig.add(keyRim.target)
+  rig.add(coolRim)
+  rig.add(coolRim.target)
+  rig.add(cameraFill)
+  sceneEl.object3D.add(rig)
+
+  metallicSpecularRigInitialized = true
+  enableMetallicLayerOnCamera(sceneEl)
+
+  sceneEl.addEventListener('camera-set-active', () => {
+    enableMetallicLayerOnCamera(sceneEl)
+  })
+}
+
+const applyExtremeMetalMaterial = (node, config) => {
+  const previousMaterial = node.material
+  if (!previousMaterial) return
+
+  node.material = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(config.color),
+    metalness: 1.0,
+    roughness: config.roughness,
+    clearcoat: 1.0,
+    clearcoatRoughness: config.clearcoatRoughness,
+    emissive: new THREE.Color(config.emissive),
+    emissiveIntensity: config.emissiveIntensity,
+    transparent: previousMaterial.transparent === true,
+    opacity: typeof previousMaterial.opacity === 'number' ? previousMaterial.opacity : 1,
+    side: previousMaterial.side,
+    depthWrite: previousMaterial.depthWrite,
+    depthTest: previousMaterial.depthTest,
+  })
+
+  applyEnvMapToMaterial(node.material, config.envMapIntensity)
+  node.layers.enable(METALLIC_LAYER)
+  node.material.needsUpdate = true
+}
+
 // Metallic finish for gantry ring
 AFRAME.registerComponent('slip-ring-assembly-metal', {
   init() {
+    ensureMetallicSpecularRig(this.el.sceneEl)
     this.el.addEventListener('model-loaded', () => {
       const mesh = this.el.getObject3D('mesh')
       if (!mesh) return
 
       mesh.traverse((node) => {
         if (!node.isMesh) return
-
-        // Clone material so other models aren't affected
-        node.material = node.material.clone()
-
-        // Medical-grade metallic finish
-        node.material.map = null
-        node.material.emissiveMap = null
-        node.material.metalnessMap = null
-        node.material.roughnessMap = null
-        node.material.color.set('#e5e5e5')
-        node.material.metalness = 0.9
-        node.material.roughness = 0.11
-        node.material.emissive.set('#1f1f1f')
-        node.material.emissiveIntensity = 0.1
-        applyEnvMapToMaterial(node.material, 6.9)
-        node.material.needsUpdate = true
+        applyExtremeMetalMaterial(node, {
+          color: '#f2f2f2',
+          roughness: 0.035,
+          clearcoatRoughness: 0.015,
+          emissive: '#060606',
+          emissiveIntensity: 0.02,
+          envMapIntensity: 14.0,
+        })
       })
     })
   },
@@ -195,28 +267,21 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
 // General metallic finish component for other models
 AFRAME.registerComponent('metallic', {
   init() {
+    ensureMetallicSpecularRig(this.el.sceneEl)
     this.el.addEventListener('model-loaded', () => {
       const mesh = this.el.getObject3D('mesh')
       if (!mesh) return
 
       mesh.traverse((node) => {
         if (!node.isMesh && !node.isSkinnedMesh) return
-
-        // Clone material so other models aren't affected
-        node.material = node.material.clone()
-
-        // Neutral metallic appearance
-        node.material.map = null
-        node.material.emissiveMap = null
-        node.material.metalnessMap = null
-        node.material.roughnessMap = null
-        node.material.color.set('#d8d8d8')
-        node.material.metalness = 0.88
-        node.material.roughness = 0.13
-        node.material.emissive.set('#1a1a1a')
-        node.material.emissiveIntensity = 0.08
-        applyEnvMapToMaterial(node.material, 6.4)
-        node.material.needsUpdate = true
+        applyExtremeMetalMaterial(node, {
+          color: '#e8e8e8',
+          roughness: 0.045,
+          clearcoatRoughness: 0.02,
+          emissive: '#070707',
+          emissiveIntensity: 0.02,
+          envMapIntensity: 12.5,
+        })
       })
     })
   },
