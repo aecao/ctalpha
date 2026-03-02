@@ -179,7 +179,8 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         node.material.color.set('#8A8A8A')
         node.material.metalness = 1.0
         node.material.roughness = 0.015
-        node.material.emissive.set('#000000')
+        node.material.emissive.set('#2b2b2b')
+        node.material.emissiveIntensity = 0.4
         applyEnvMapToMaterial(node.material, 5.9)
         node.material.needsUpdate = true
       })
@@ -204,7 +205,8 @@ AFRAME.registerComponent('metallic', {
         node.material.color.set('#7A7A7A')
         node.material.metalness = 0.98
         node.material.roughness = 0.022
-        node.material.emissive.set('#000000')
+        node.material.emissive.set('#262626')
+        node.material.emissiveIntensity = 0.32
         applyEnvMapToMaterial(node.material, 5.4)
         node.material.needsUpdate = true
       })
@@ -284,6 +286,27 @@ AFRAME.registerComponent('dark-plastic', {
   },
 })
 
+AFRAME.registerComponent('laser-positioning-dark', {
+  init() {
+    this.el.addEventListener('model-loaded', () => {
+      const mesh = this.el.getObject3D('mesh')
+      if (!mesh) return
+
+      mesh.traverse((node) => {
+        if (!node.isMesh) return
+
+        node.material = node.material.clone()
+        node.material.color.set('#040405')
+        node.material.metalness = 0.0
+        node.material.roughness = 0.7
+        node.material.emissive.set('#000000')
+        applyEnvMapToMaterial(node.material, 0.18)
+        node.material.needsUpdate = true
+      })
+    })
+  },
+})
+
 // Fabric finish for patient table
 AFRAME.registerComponent('fabric', {
   init() {
@@ -325,6 +348,8 @@ AFRAME.registerComponent('laser-surface', {
 
       mesh.traverse((node) => {
         if (!node.isMesh) return
+
+        node.raycast = () => null
 
         node.material = new THREE.ShaderMaterial({
           uniforms: {
