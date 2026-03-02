@@ -307,6 +307,34 @@ AFRAME.registerComponent('laser-positioning-dark', {
   },
 })
 
+AFRAME.registerComponent('screen-glow', {
+  schema: {
+    color: {type: 'color', default: '#223344'},
+    emissive: {type: 'color', default: '#7fd0ff'},
+    emissiveIntensity: {type: 'number', default: 2.6},
+    roughness: {type: 'number', default: 0.08},
+  },
+  init() {
+    this.el.addEventListener('model-loaded', () => {
+      const mesh = this.el.getObject3D('mesh')
+      if (!mesh) return
+
+      mesh.traverse((node) => {
+        if (!node.isMesh) return
+
+        node.material = node.material.clone()
+        node.material.color.set(this.data.color)
+        node.material.metalness = 0.0
+        node.material.roughness = this.data.roughness
+        node.material.emissive.set(this.data.emissive)
+        node.material.emissiveIntensity = this.data.emissiveIntensity
+        applyEnvMapToMaterial(node.material, 0.35)
+        node.material.needsUpdate = true
+      })
+    })
+  },
+})
+
 // Fabric finish for patient table
 AFRAME.registerComponent('fabric', {
   init() {
