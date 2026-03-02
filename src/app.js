@@ -178,9 +178,9 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         // Medical-grade metallic finish
         node.material.color.set('#4A4A4A')
         node.material.metalness = 0.95
-        node.material.roughness = 0.18
+        node.material.roughness = 0.12
         node.material.emissive.set('#000000')
-        applyEnvMapToMaterial(node.material, 2.2)
+        applyEnvMapToMaterial(node.material, 3.4)
         node.material.needsUpdate = true
       })
     })
@@ -203,9 +203,9 @@ AFRAME.registerComponent('metallic', {
         // Neutral metallic appearance
         node.material.color.set('#3F3F3F')
         node.material.metalness = 0.92
-        node.material.roughness = 0.2
+        node.material.roughness = 0.14
         node.material.emissive.set('#000000')
-        applyEnvMapToMaterial(node.material, 2.4)
+        applyEnvMapToMaterial(node.material, 3.2)
         node.material.needsUpdate = true
       })
     })
@@ -228,8 +228,8 @@ AFRAME.registerComponent('light-plastic', {
         // plastic finish
         node.material.color.set('#BBCEED')
         node.material.metalness = 0.0
-        node.material.roughness = 0.45
-        applyEnvMapToMaterial(node.material, 1.2)
+        node.material.roughness = 0.3
+        applyEnvMapToMaterial(node.material, 0.9)
         node.material.needsUpdate = true
       })
     })
@@ -252,8 +252,8 @@ AFRAME.registerComponent('med-plastic', {
         // plastic finish
         node.material.color.set('#465369')
         node.material.metalness = 0.0
-        node.material.roughness = 0.45
-        applyEnvMapToMaterial(node.material, 1.2)
+        node.material.roughness = 0.3
+        applyEnvMapToMaterial(node.material, 0.9)
         node.material.needsUpdate = true
       })
     })
@@ -276,8 +276,8 @@ AFRAME.registerComponent('dark-plastic', {
         // plastic finish
         node.material.color.set('#09090A')
         node.material.metalness = 0.0
-        node.material.roughness = 0.45
-        applyEnvMapToMaterial(node.material, 1.2)
+        node.material.roughness = 0.3
+        applyEnvMapToMaterial(node.material, 0.9)
         node.material.needsUpdate = true
       })
     })
@@ -298,8 +298,8 @@ AFRAME.registerComponent('fabric', {
 
         node.material.color.set('#C7C2B8')
         node.material.metalness = 0.0
-        node.material.roughness = 0.9
-        applyEnvMapToMaterial(node.material, 0.4)
+        node.material.roughness = 0.75
+        applyEnvMapToMaterial(node.material, 0.25)
         node.material.needsUpdate = true
       })
     })
