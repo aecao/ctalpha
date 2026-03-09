@@ -4,18 +4,30 @@ import {updateButtonVisibility} from './next-button.js'
 
 const originalMaterials = new Map()
 
+const getSafeColor = (material) => {
+  if (material && material.color && material.color.isColor) return material.color.clone()
+  return new THREE.Color(0xffffff)
+}
+
+const getSafeEmissive = (material) => {
+  if (material && material.emissive && material.emissive.isColor) return material.emissive.clone()
+  return new THREE.Color(0x000000)
+}
+
 function cacheOriginalMaterials(modelElement) {
   const mesh = modelElement.getObject3D('mesh')
   if (!mesh) return
   mesh.traverse((node) => {
     if (!node.isMesh && !node.isSkinnedMesh) return
+    const material = node.material
+    if (!material) return
     if (!originalMaterials.has(node)) {
       originalMaterials.set(node, {
-        transparent: node.material.transparent,
-        opacity: node.material.opacity,
-        color: node.material.color.clone(),
-        emissive: node.material.emissive ? node.material.emissive.clone() : new THREE.Color(0x000000),
-        emissiveIntensity: node.material.emissiveIntensity || 0,
+        transparent: material.transparent,
+        opacity: typeof material.opacity === 'number' ? material.opacity : 1,
+        color: getSafeColor(material),
+        emissive: getSafeEmissive(material),
+        emissiveIntensity: material.emissiveIntensity || 0,
       })
     }
   })
@@ -27,31 +39,37 @@ export function setOpacity(modelElement, opacity, highlight = false) {
   if (!mesh) return
   mesh.traverse((node) => {
     if (!node.isMesh && !node.isSkinnedMesh) return
+    const material = node.material
+    if (!material) return
     if (!originalMaterials.has(node)) {
       originalMaterials.set(node, {
-        transparent: node.material.transparent,
-        opacity: node.material.opacity,
-        color: node.material.color.clone(),
-        emissive: node.material.emissive ? node.material.emissive.clone() : new THREE.Color(0x000000),
-        emissiveIntensity: node.material.emissiveIntensity || 0,
+        transparent: material.transparent,
+        opacity: typeof material.opacity === 'number' ? material.opacity : 1,
+        color: getSafeColor(material),
+        emissive: getSafeEmissive(material),
+        emissiveIntensity: material.emissiveIntensity || 0,
       })
     }
-    node.material.transparent = false
-    node.material.opacity = 1
-    node.material.depthWrite = true
+    material.transparent = false
+    material.opacity = opacity
+    material.depthWrite = true
     if (highlight) {
       // Keep original color, only add emissive glow
-      node.material.color.copy(originalMaterials.get(node).color)
-      if (node.material.emissive) {
-        node.material.emissive.set(0x00ff00)
-        node.material.emissiveIntensity = 0.4
+      if (material.color && material.color.isColor) {
+        material.color.copy(originalMaterials.get(node).color)
+      }
+      if (material.emissive && material.emissive.isColor) {
+        material.emissive.set(0x00ff00)
+        material.emissiveIntensity = 0.4
       }
     } else {
-      node.material.color.copy(originalMaterials.get(node).color)
+      if (material.color && material.color.isColor) {
+        material.color.copy(originalMaterials.get(node).color)
+      }
       // Reset emissive for unselected components
-      if (node.material.emissive) {
-        node.material.emissive.copy(originalMaterials.get(node).emissive)
-        node.material.emissiveIntensity = originalMaterials.get(node).emissiveIntensity
+      if (material.emissive && material.emissive.isColor) {
+        material.emissive.copy(originalMaterials.get(node).emissive)
+        material.emissiveIntensity = originalMaterials.get(node).emissiveIntensity
       }
     }
   })
@@ -130,8 +148,8 @@ export const selectComponent = {
           currentlySelected = modelId
           setSelectedIndex(index)
           openPopup(index, modelDescriptions)
-          updateModelVisibility(modelId)
           updateButtonVisibility()
+          updateModelVisibility(modelId)
         }
 
         // Attach the select handler to the model element
