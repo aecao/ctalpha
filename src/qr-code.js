@@ -2,14 +2,25 @@ import QRCode from 'qrcode'
 
 // Detect mobile devices
 const isMobile = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  )
+  const userAgent = navigator.userAgent || ''
+  const isClassicMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+  const isIPadDesktopMode = /Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1
+
+  return isClassicMobile || isIPadDesktopMode
 }
 
 // Generate QR code for the current site
 const initQRCode = () => {
   const qrContainer = document.getElementById('qr-code-container')
+  const realScaleButton = document.getElementById('real-scale-button')
+  const fixRotationButton = document.getElementById('fix-in-place-button')
+
+  const setAppControlsVisible = (visible) => {
+    const displayValue = visible ? 'block' : 'none'
+    if (realScaleButton) realScaleButton.style.display = displayValue
+    if (fixRotationButton) fixRotationButton.style.display = displayValue
+  }
+
   if (!qrContainer) return
 
   const isMobileDevice = isMobile()
@@ -17,11 +28,13 @@ const initQRCode = () => {
   // On mobile, hide QR code container
   if (isMobileDevice) {
     qrContainer.style.display = 'none'
+    setAppControlsVisible(true)
     return
   }
 
   // On desktop, show QR code
   qrContainer.style.display = 'flex'
+  setAppControlsVisible(false)
   const siteUrl = window.location.href
 
   const canvas = document.getElementById('qr-code-canvas')
