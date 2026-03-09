@@ -222,6 +222,23 @@ a {
   }
 }
 
+@media (max-width: 768px) and (orientation: portrait) {
+  .popup {
+    height: 33vh;
+    padding: 2vh 3vw;
+  }
+
+  .popup-content-wrapper {
+    margin-top: 0.5vh;
+    margin-bottom: 0.5vh;
+    min-height: 0;
+  }
+
+  .content p {
+    margin-bottom: 0.6em;
+  }
+}
+
 @media (max-width: 375px) {
   .popup-content-wrapper {
     margin-top: 6vh;
