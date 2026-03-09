@@ -16,7 +16,7 @@ const initTransformLockModes = () => {
 
   if (!realScaleButton || !fixInPlaceButton || !scene || !group) return
 
-  const trueScale = group.object3D.scale.clone().multiplyScalar(2)
+  const trueScale = group.object3D.scale.clone().multiplyScalar(2.2)
   let isRealScaleEnabled = false
   let isFixInPlaceEnabled = false
   let lockFrameId = null
