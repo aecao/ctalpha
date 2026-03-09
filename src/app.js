@@ -484,13 +484,15 @@ AFRAME.registerComponent('laser-surface', {
               float core = smoothstep(0.45, 0.0, t);
               vec3 baseColor = mix(uOuterColor, uInnerColor, core);
               vec3 glow = baseColor * (uIntensity * (0.35 + core * 1.1));
-              gl_FragColor = vec4(glow, fade * uOpacity);
+              float alpha = clamp(fade * uOpacity, 0.0, 1.0);
+              gl_FragColor = vec4(glow * alpha, alpha);
             }
           `,
           transparent: true,
           depthWrite: false,
-          depthTest: true,
-          blending: THREE.AdditiveBlending,
+          depthTest: false,
+          blending: THREE.NormalBlending,
+          premultipliedAlpha: true,
           side: THREE.DoubleSide,
         })
 
