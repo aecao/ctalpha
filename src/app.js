@@ -337,10 +337,10 @@ const applyHybridMetalMaterial = (node, config) => {
   node.material.metalnessMap = null
   node.material.roughnessMap = null
   node.material.color.set(config.color)
-  node.material.metalness = 0.98
+  node.material.metalness = 1.0
   node.material.roughness = config.roughness
-  node.material.emissive.set('#111111')
-  node.material.emissiveIntensity = 0.03
+  node.material.emissive.set('#050505')
+  node.material.emissiveIntensity = 0.01
 
   addMetalRimBoost(node.material, config.rimStrength, config.rimPower)
   applyEnvMapToMaterial(node.material, config.envMapIntensity)
@@ -358,10 +358,10 @@ AFRAME.registerComponent('slip-ring-assembly-metal', {
         if (!node.isMesh) return
         applyHybridMetalMaterial(node, {
           color: '#f0f0f0',
-          roughness: 0.045,
-          envMapIntensity: 24.0,
-          rimStrength: 0.52,
-          rimPower: 1.8,
+          roughness: 0.012,
+          envMapIntensity: 34.0,
+          rimStrength: 0.35,
+          rimPower: 1.7,
         })
       })
     })
@@ -379,10 +379,10 @@ AFRAME.registerComponent('metallic', {
         if (!node.isMesh && !node.isSkinnedMesh) return
         applyHybridMetalMaterial(node, {
           color: '#e4e4e4',
-          roughness: 0.055,
-          envMapIntensity: 22.0,
-          rimStrength: 0.45,
-          rimPower: 1.9,
+          roughness: 0.016,
+          envMapIntensity: 32.0,
+          rimStrength: 0.32,
+          rimPower: 1.8,
         })
       })
     })
