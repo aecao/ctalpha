@@ -8,44 +8,55 @@ import {initQRCode} from './qr-code'
 // Initialize QR code for desktop users
 initQRCode()
 
-const initRealScaleMode = () => {
-  const button = document.getElementById('real-scale-button')
+const initTransformLockModes = () => {
+  const realScaleButton = document.getElementById('real-scale-button')
+  const fixInPlaceButton = document.getElementById('fix-in-place-button')
   const scene = document.querySelector('a-scene')
   const group = document.getElementById('group')
 
-  if (!button || !scene || !group) return
+  if (!realScaleButton || !fixInPlaceButton || !scene || !group) return
 
+  const trueScale = group.object3D.scale.clone()
   let isRealScaleEnabled = false
+  let isFixInPlaceEnabled = false
   let lockFrameId = null
-  let lockedTransform = null
+  let fixedTransform = null
 
-  const setGestureInteractivity = (enabled) => {
-    if (enabled) {
-      if (!group.hasAttribute('xrextras-gesture-detector')) {
-        group.setAttribute('xrextras-gesture-detector', '')
-      }
-      group.setAttribute('xrextras-two-finger-rotate', '')
-      group.setAttribute('xrextras-pinch-scale', '')
-      group.setAttribute('xrextras-hold-drag', 'rise-height: 0')
-      return
+  const applyGestureModes = () => {
+    if (!group.hasAttribute('xrextras-gesture-detector')) {
+      group.setAttribute('xrextras-gesture-detector', '')
     }
 
-    group.removeAttribute('xrextras-two-finger-rotate')
-    group.removeAttribute('xrextras-pinch-scale')
-    group.removeAttribute('xrextras-hold-drag')
+    if (isFixInPlaceEnabled) {
+      group.removeAttribute('xrextras-two-finger-rotate')
+      group.removeAttribute('xrextras-hold-drag')
+    } else {
+      group.setAttribute('xrextras-two-finger-rotate', '')
+      group.setAttribute('xrextras-hold-drag', 'rise-height: 0')
+    }
+
+    if (isRealScaleEnabled) {
+      group.removeAttribute('xrextras-pinch-scale')
+    } else {
+      group.setAttribute('xrextras-pinch-scale', '')
+    }
   }
 
-  const applyLockedTransform = () => {
-    if (!isRealScaleEnabled || !lockedTransform) return
-    group.object3D.position.copy(lockedTransform.position)
-    group.object3D.quaternion.copy(lockedTransform.quaternion)
-    group.object3D.scale.copy(lockedTransform.scale)
+  const applyLocks = () => {
+    if (isRealScaleEnabled) {
+      group.object3D.scale.copy(trueScale)
+    }
+
+    if (isFixInPlaceEnabled && fixedTransform) {
+      group.object3D.position.copy(fixedTransform.position)
+      group.object3D.quaternion.copy(fixedTransform.quaternion)
+    }
   }
 
   const startLockLoop = () => {
     const tick = () => {
-      applyLockedTransform()
-      if (isRealScaleEnabled) {
+      applyLocks()
+      if (isRealScaleEnabled || isFixInPlaceEnabled) {
         lockFrameId = requestAnimationFrame(tick)
       }
     }
@@ -59,46 +70,61 @@ const initRealScaleMode = () => {
     }
   }
 
-  const setRealScaleMode = (enabled) => {
-    isRealScaleEnabled = enabled
-
-    if (enabled) {
-      lockedTransform = {
-        position: group.object3D.position.clone(),
-        quaternion: group.object3D.quaternion.clone(),
-        scale: group.object3D.scale.clone(),
-      }
-      setGestureInteractivity(false)
-      stopLockLoop()
-      startLockLoop()
-      button.classList.add('active')
-      button.textContent = 'Real Scale On'
-      return
-    }
-
+  const updateLockLoop = () => {
     stopLockLoop()
-    setGestureInteractivity(true)
-    button.classList.remove('active')
-    button.textContent = 'Real Scale'
+    if (isRealScaleEnabled || isFixInPlaceEnabled) {
+      startLockLoop()
+    }
   }
 
-  button.addEventListener('click', (event) => {
+  const setRealScaleMode = (enabled) => {
+    isRealScaleEnabled = enabled
+    realScaleButton.classList.toggle('active', enabled)
+
+    if (enabled) {
+      group.object3D.scale.copy(trueScale)
+    }
+
+    applyGestureModes()
+    updateLockLoop()
+  }
+
+  const setFixInPlaceMode = (enabled) => {
+    isFixInPlaceEnabled = enabled
+    fixInPlaceButton.classList.toggle('active', enabled)
+
+    if (enabled) {
+      fixedTransform = {
+        position: group.object3D.position.clone(),
+        quaternion: group.object3D.quaternion.clone(),
+      }
+    }
+
+    applyGestureModes()
+    updateLockLoop()
+  }
+
+  realScaleButton.addEventListener('click', (event) => {
     event.preventDefault()
     event.stopPropagation()
     setRealScaleMode(!isRealScaleEnabled)
   })
 
+  fixInPlaceButton.addEventListener('click', (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setFixInPlaceMode(!isFixInPlaceEnabled)
+  })
+
   scene.addEventListener('xrstart', () => {
-    if (isRealScaleEnabled) {
-      applyLockedTransform()
-    }
+    applyLocks()
   })
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initRealScaleMode)
+  document.addEventListener('DOMContentLoaded', initTransformLockModes)
 } else {
-  initRealScaleMode()
+  initTransformLockModes()
 }
 
 let envMapTexture = null

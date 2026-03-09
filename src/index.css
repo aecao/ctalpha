@@ -21,9 +21,9 @@ body {
   display: none;
 }
 
-#real-scale-button {
+#real-scale-button,
+#fix-in-place-button {
   position: fixed;
-  top: 12px;
   left: 12px;
   z-index: 10002;
   pointer-events: auto;
@@ -38,7 +38,16 @@ body {
   text-transform: uppercase;
 }
 
-#real-scale-button.active {
+#real-scale-button {
+  top: 12px;
+}
+
+#fix-in-place-button {
+  top: 56px;
+}
+
+#real-scale-button.active,
+#fix-in-place-button.active {
   background-color: #2f6df6;
 }
 
