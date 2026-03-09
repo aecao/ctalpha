@@ -435,7 +435,7 @@ AFRAME.registerComponent('laser-surface', {
   schema: {
     innerColor: {type: 'color', default: '#ff2a2a'},
     outerColor: {type: 'color', default: '#7a0000'},
-    opacity: {type: 'number', default: 0.72},
+    opacity: {type: 'number', default: 0.45},
     intensity: {type: 'number', default: 2.1},
     alphaPower: {type: 'number', default: 1.8},
     flipGradient: {type: 'boolean', default: false},

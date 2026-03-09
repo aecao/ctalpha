@@ -79,7 +79,7 @@ const config = {
   output: {
     filename: 'bundle.js',
     path: distPath,
-    publicPath: '/ctalpha/',
+    publicPath: 'auto',
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -121,6 +121,8 @@ const config = {
   mode: 'production',
   context: srcPath,
   devServer: {
+    host: '0.0.0.0',
+    port: 8080,
     open: false,
     compress: true,
     hot: true,
@@ -135,9 +137,10 @@ const config = {
       overlay: {
         warnings: false,
         errors: true,
+        runtimeErrors: false,
       },
     },
-    allowedJosts: ['.ngrok-free.dev']
+    allowedHosts: 'all'
   },
 }
 
