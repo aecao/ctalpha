@@ -11,6 +11,18 @@ const DIM_SHADER_INTENSITY_SCALE = 0.78
 const LASER_DIM_OPACITY = 0.2
 const LASER_DIM_SHADER_OPACITY_SCALE = 0.45
 const LASER_DIM_SHADER_INTENSITY_SCALE = 0.55
+const LASER_ENTITY_IDS = ['laser_positioning_lights', 'laser_surface_1', 'laser_surface_2', 'laser_surface_3']
+
+const isLaserEntity = (id) => LASER_ENTITY_IDS.includes(id)
+
+const setLaserVisibility = (selectedModelId) => {
+  const showLasers = selectedModelId === 'laser_positioning_lights'
+  LASER_ENTITY_IDS.forEach((id) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    el.setAttribute('visible', showLasers ? 'true' : 'false')
+  })
+}
 
 const getSafeColor = (material) => {
   if (material && material.color && material.color.isColor) return material.color.clone()
@@ -156,7 +168,14 @@ export function setOpacity(modelElement, opacity, dimmed = false, dimProfile = {
 }
 
 export function updateModelVisibility(selectedModelId) {
+  if (!selectedModelId) {
+    resetModelOpacity()
+    setLaserVisibility(null)
+    return
+  }
+
   const isLaserSelected = selectedModelId === 'laser_positioning_lights'
+  setLaserVisibility(selectedModelId)
 
   document.querySelectorAll('[gltf-model]').forEach((el) => {
     const isLaserSurface = el.id === 'laser_surface_1' || el.id === 'laser_surface_2' || el.id === 'laser_surface_3'
@@ -164,6 +183,9 @@ export function updateModelVisibility(selectedModelId) {
     if (el.id === selectedModelId) {
       setOpacity(el, 1, false)
     } else if (isLaserSelected && isLaserSurface) {
+      setOpacity(el, 1, false)
+    } else if (!isLaserSelected && isLaserEntity(el.id)) {
+      // Hidden unless laser positioning lights are selected
       setOpacity(el, 1, false)
     } else if (isLaserSurface) {
       setOpacity(el, LASER_DIM_OPACITY, true, {
@@ -222,6 +244,7 @@ export const selectComponent = {
     let locked = false
 
     scene.addEventListener('loaded', () => {
+      setLaserVisibility(null)
       document.querySelectorAll('.cantap').forEach((modelElement) => {
         // Cache immediately if mesh exists
         cacheOriginalMaterials(modelElement)
@@ -255,6 +278,7 @@ export const selectComponent = {
             closePopup()
             setSelectedIndex(-1)
             updateButtonVisibility()
+            updateModelVisibility(null)
             return
           }
 
