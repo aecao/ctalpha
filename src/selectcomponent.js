@@ -321,40 +321,40 @@ export const selectComponent = {
             }
           }
         })
+      })
 
-        const handleSelect = (e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (locked) return
-          locked = true
-          setTimeout(() => (locked = false), 250)
+      // Single delegated handler on the scene so only the actual clicked
+      // target determines currentlySelected — avoids A-Frame event bubbling
+      // causing multiple per-element handlers to overwrite each other.
+      scene.addEventListener('click', (e) => {
+        const modelElement = e.target
+        if (!modelElement || !modelElement.classList.contains('cantap')) return
 
-          const modelId = modelElement.id
+        if (locked) return
+        locked = true
+        setTimeout(() => (locked = false), 250)
 
-          if (currentlySelected === modelId) {
-            currentlySelected = null
-            // Close the popup and restore model visuals
-            closePopup()
-            setSelectedIndex(-1)
-            updateButtonVisibility()
-            updateModelVisibility(null)
-            setOffscreenBannerVisible(false)
-            return
-          }
+        const modelId = modelElement.id
 
-          const index = modelDescriptions.findIndex(d => d.Modelname === modelId)
-          if (index === -1) return
-
-          currentlySelected = modelId
-          setSelectedIndex(index)
-          openPopup(index, modelDescriptions)
+        if (currentlySelected === modelId) {
+          currentlySelected = null
+          closePopup()
+          setSelectedIndex(-1)
           updateButtonVisibility()
-          updateModelVisibility(modelId)
-          updateOffscreenBanner()
+          updateModelVisibility(null)
+          setOffscreenBannerVisible(false)
+          return
         }
 
-        // Attach the select handler to the model element
-        modelElement.addEventListener('click', handleSelect)
+        const index = modelDescriptions.findIndex(d => d.Modelname === modelId)
+        if (index === -1) return
+
+        currentlySelected = modelId
+        setSelectedIndex(index)
+        openPopup(index, modelDescriptions)
+        updateButtonVisibility()
+        updateModelVisibility(modelId)
+        updateOffscreenBanner()
       })
     })
   },
