@@ -48,6 +48,10 @@ body {
 #transform-menu-button {
   width: 42px;
   height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   border: none;
   border-radius: 999px;
   background-color: #000000;
