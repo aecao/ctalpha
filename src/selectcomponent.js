@@ -230,14 +230,10 @@ export function resetModelOpacity() {
 export const selectComponent = {
   init() {
     const scene = this.el
-    const cameraEntity = scene.querySelector('#camera')
     const offscreenBanner = document.getElementById('offscreen-status-banner')
-    const tempTargetWorldPosition = new THREE.Vector3()
-    const tempCameraWorldPosition = new THREE.Vector3()
-    const tempDirectionToTarget = new THREE.Vector3()
-    const tempCameraForward = new THREE.Vector3()
-    const projectionViewMatrix = new THREE.Matrix4()
-    const viewFrustum = new THREE.Frustum()
+    const tempWorldPos = new THREE.Vector3()
+    const tempNDC = new THREE.Vector3()
+    const tempBox = new THREE.Box3()
     let currentlySelected = null
     let locked = false
 
@@ -258,46 +254,37 @@ export const selectComponent = {
       offscreenBanner.style.display = 'block'
     }
 
-    const getMeshWorldCenter = (modelElement) => {
-      const mesh = modelElement.getObject3D('mesh')
-      if (!mesh) return null
-      const box = new THREE.Box3().setFromObject(mesh)
-      if (box.isEmpty()) return null
-      box.getCenter(tempTargetWorldPosition)
-      return tempTargetWorldPosition
-    }
-
     const isSelectedModelOffscreen = () => {
-      if (!currentlySelected || !cameraEntity) return false
+      if (!currentlySelected) return false
       const selectedModel = document.getElementById(currentlySelected)
       if (!selectedModel) return false
 
-      const cameraObject = cameraEntity.getObject3D('camera') || cameraEntity.components?.camera?.camera
-      if (!cameraObject) return false
+      // scene.camera is the actual THREE.js camera A-Frame renders with,
+      // including the XR camera in AR mode — more reliable than querying the entity.
+      const camera = scene.camera
+      if (!camera) return false
 
-      // Use mesh bounding box center so models at entity origin (0,0,0) are
-      // correctly located in world space rather than collapsing to the group anchor.
-      if (!getMeshWorldCenter(selectedModel)) {
-        selectedModel.object3D.getWorldPosition(tempTargetWorldPosition)
+      // Compute world-space bounding box center of the mesh so models sharing
+      // the group origin (0,0,0) are located correctly.
+      const mesh = selectedModel.getObject3D('mesh')
+      if (mesh) {
+        tempBox.setFromObject(mesh)
+        if (!tempBox.isEmpty()) {
+          tempBox.getCenter(tempWorldPos)
+        } else {
+          selectedModel.object3D.getWorldPosition(tempWorldPos)
+        }
+      } else {
+        selectedModel.object3D.getWorldPosition(tempWorldPos)
       }
 
-      cameraObject.getWorldPosition(tempCameraWorldPosition)
-      cameraObject.getWorldDirection(tempCameraForward)
-
-      tempDirectionToTarget
-        .copy(tempTargetWorldPosition)
-        .sub(tempCameraWorldPosition)
-
-      if (tempDirectionToTarget.lengthSq() < 1e-8) return false
-
-      const isInFrontOfCamera = tempCameraForward.dot(tempDirectionToTarget.normalize()) > 0.15
-      if (!isInFrontOfCamera) return true
-
-      cameraObject.updateMatrixWorld(true)
-      projectionViewMatrix.multiplyMatrices(cameraObject.projectionMatrix, cameraObject.matrixWorldInverse)
-      viewFrustum.setFromProjectionMatrix(projectionViewMatrix)
-
-      return !viewFrustum.containsPoint(tempTargetWorldPosition)
+      // Project to NDC [-1..1] in x/y. After project(), z > 1 means behind
+      // the camera; |x| or |y| > 1 means outside the viewport.
+      // A small margin (1.05) avoids jitter right at the edges.
+      tempNDC.copy(tempWorldPos).project(camera)
+      if (tempNDC.z > 1) return true
+      if (Math.abs(tempNDC.x) > 1.05 || Math.abs(tempNDC.y) > 1.05) return true
+      return false
     }
 
     const updateOffscreenBanner = () => {
