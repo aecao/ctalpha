@@ -5,6 +5,12 @@ function openPopup(modelIndex, modelDescriptions) {
   const popupTitle = document.getElementById('popup-title')
   const popupContent = document.getElementById('popup-content')
   const closePopupButton = document.getElementById('close-popup')
+  const progressFill = document.getElementById('popup-progress-fill')
+
+  if (progressFill && modelDescriptions.length > 0) {
+    const pct = ((modelIndex + 1) / modelDescriptions.length) * 100
+    progressFill.style.width = `${pct}%`
+  }
 
   if (modelIndex >= 0 && modelIndex < modelDescriptions.length) {
     const {Title, Subtitle, Description} = modelDescriptions[modelIndex]
@@ -32,6 +38,7 @@ function openPopup(modelIndex, modelDescriptions) {
 
   closePopupButton.onclick = () => {
     popup.style.display = 'none'
+    if (progressFill) progressFill.style.width = '0%'
     resetModelOpacity()
   }
 }
@@ -39,7 +46,9 @@ function openPopup(modelIndex, modelDescriptions) {
 // Programmatic close for other components to call
 function closePopup() {
   const popup = document.getElementById('popup')
+  const progressFill = document.getElementById('popup-progress-fill')
   if (popup) popup.style.display = 'none'
+  if (progressFill) progressFill.style.width = '0%'
   resetModelOpacity()
 }
 

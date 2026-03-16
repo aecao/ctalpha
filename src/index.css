@@ -332,6 +332,26 @@ a {
   color: #00ff00;
 }
 
+#popup-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#popup-progress-fill {
+  height: 100%;
+  width: 0%;
+  background-color: #2f6df6;
+  border-radius: 0 0 20px 20px;
+  transition: width 0.35s ease;
+}
+
 .popup-close-icon:hover {
   color: #00cc00;
 }
