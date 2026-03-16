@@ -538,7 +538,7 @@ export const selectComponent = {
         if (index === -1) return
 
         setSelectedIndex(index)
-        openPopup(index, modelDescriptions)
+        openPopup(index, modelDescriptions, clearSelection)
         updateButtonVisibility()
         updateModelVisibility(modelId)
         updateOffscreenBanner()

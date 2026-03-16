@@ -1,6 +1,6 @@
 import {resetModelOpacity, updateModelVisibility} from './selectcomponent.js'
 
-function openPopup(modelIndex, modelDescriptions) {
+function openPopup(modelIndex, modelDescriptions, onClose) {
   const popup = document.getElementById('popup')
   const popupTitle = document.getElementById('popup-title')
   const popupContent = document.getElementById('popup-content')
@@ -40,6 +40,7 @@ function openPopup(modelIndex, modelDescriptions) {
     popup.style.display = 'none'
     if (progressFill) progressFill.style.width = '0%'
     resetModelOpacity()
+    if (onClose) onClose()
   }
 }
 
