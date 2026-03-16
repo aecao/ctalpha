@@ -295,6 +295,8 @@ export const selectComponent = {
     const scene = this.el
     const popupElement = document.getElementById('popup')
     const offscreenBanner = document.getElementById('offscreen-status-banner')
+    const tempPointer = new THREE.Vector2()
+    const tempRaycaster = new THREE.Raycaster()
     const tempWorldPos = new THREE.Vector3()
     const tempNDC = new THREE.Vector3()
     const tempBox = new THREE.Box3()
@@ -372,6 +374,69 @@ export const selectComponent = {
       return !visibleInAnyCamera
     }
 
+    const getEventClientPoint = (event) => {
+      if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+        return {x: event.clientX, y: event.clientY}
+      }
+
+      const touch = event.changedTouches?.[0] || event.touches?.[0]
+      if (touch && typeof touch.clientX === 'number' && typeof touch.clientY === 'number') {
+        return {x: touch.clientX, y: touch.clientY}
+      }
+
+      return null
+    }
+
+    const getPrimaryRaycastCamera = () => {
+      const cameras = getActiveCamera()
+      if (!cameras || cameras.length === 0) return null
+      return cameras[0]
+    }
+
+    const pickModelFromScreenPoint = (event) => {
+      const point = getEventClientPoint(event)
+      if (!point) return null
+
+      const camera = getPrimaryRaycastCamera()
+      if (!camera) return null
+
+      const canvas = scene.canvas || scene.renderer?.domElement
+      const rect = canvas?.getBoundingClientRect ? canvas.getBoundingClientRect() : null
+      if (!rect || rect.width <= 0 || rect.height <= 0) return null
+
+      tempPointer.x = ((point.x - rect.left) / rect.width) * 2 - 1
+      tempPointer.y = -((point.y - rect.top) / rect.height) * 2 + 1
+
+      camera.updateMatrixWorld(true)
+      tempRaycaster.setFromCamera(tempPointer, camera)
+
+      const candidateMeshes = []
+      const meshToElement = new Map()
+      document.querySelectorAll('.cantap').forEach((el) => {
+        const mesh = el.getObject3D('mesh')
+        if (!mesh) return
+        mesh.traverse((node) => {
+          if (!node.isMesh && !node.isSkinnedMesh) return
+          candidateMeshes.push(node)
+          meshToElement.set(node, el)
+        })
+      })
+
+      if (candidateMeshes.length === 0) return null
+
+      const intersections = tempRaycaster.intersectObjects(candidateMeshes, false)
+      for (const hit of intersections) {
+        let current = hit.object
+        while (current) {
+          const matched = meshToElement.get(current)
+          if (matched) return matched
+          current = current.parent
+        }
+      }
+
+      return null
+    }
+
     const updateOffscreenBanner = () => {
       const selectedIndex = getSelectedIndex()
       if (selectedIndex < 0 || selectedIndex >= modelDescriptions.length) {
@@ -417,8 +482,12 @@ export const selectComponent = {
       // Single delegated handler on the scene so only the actual clicked
       // target determines currentlySelected — avoids A-Frame event bubbling
       // causing multiple per-element handlers to overwrite each other.
-      scene.addEventListener('click', (e) => {
-        const modelElement = e.target?.closest ? e.target.closest('.cantap') : null
+      const handleSceneSelection = (e) => {
+        let modelElement = e.target?.closest ? e.target.closest('.cantap') : null
+        if (!modelElement) {
+          modelElement = pickModelFromScreenPoint(e)
+        }
+
         if (!modelElement) {
           if (getSelectedIndex() !== -1) {
             clearSelection()
@@ -449,7 +518,19 @@ export const selectComponent = {
         updateButtonVisibility()
         updateModelVisibility(modelId)
         updateOffscreenBanner()
-      })
+      }
+
+      scene.addEventListener('click', handleSceneSelection)
+
+      const sceneCanvas = scene.canvas || scene.renderer?.domElement
+      if (sceneCanvas) {
+        sceneCanvas.addEventListener('touchend', handleSceneSelection, {passive: true})
+        sceneCanvas.addEventListener('pointerup', (event) => {
+          if (event.pointerType === 'touch' || event.pointerType === 'pen') {
+            handleSceneSelection(event)
+          }
+        }, {passive: true})
+      }
     })
   },
 }
