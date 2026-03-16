@@ -53,10 +53,8 @@ const initTransformLockModes = () => {
 
     if (isDynamicRotationEnabled) {
       group.setAttribute('xrextras-two-finger-rotate', '')
-      group.setAttribute('xrextras-hold-drag', 'rise-height: 0')
     } else {
       group.removeAttribute('xrextras-two-finger-rotate')
-      group.removeAttribute('xrextras-hold-drag')
     }
 
     if (isDynamicScaleEnabled) {
