@@ -243,8 +243,77 @@ export function resetModelOpacity() {
 export const selectComponent = {
   init() {
     const scene = this.el
+    const cameraEntity = scene.querySelector('#camera')
+    const offscreenBanner = document.getElementById('offscreen-status-banner')
+    const tempTargetWorldPosition = new THREE.Vector3()
+    const tempCameraWorldPosition = new THREE.Vector3()
+    const tempDirectionToTarget = new THREE.Vector3()
+    const tempCameraForward = new THREE.Vector3()
+    const projectionViewMatrix = new THREE.Matrix4()
+    const viewFrustum = new THREE.Frustum()
     let currentlySelected = null
     let locked = false
+
+    const getSelectedTitle = (modelId) => {
+      const match = modelDescriptions.find((item) => item.Modelname === modelId)
+      return match?.Title || 'Selected Component'
+    }
+
+    const setOffscreenBannerVisible = (visible, modelId = null) => {
+      if (!offscreenBanner) return
+      if (!visible || !modelId) {
+        offscreenBanner.style.display = 'none'
+        offscreenBanner.textContent = ''
+        return
+      }
+
+      offscreenBanner.textContent = `${getSelectedTitle(modelId)} is off-screen`
+      offscreenBanner.style.display = 'block'
+    }
+
+    const isSelectedModelOffscreen = () => {
+      if (!currentlySelected || !cameraEntity) return false
+      const selectedModel = document.getElementById(currentlySelected)
+      if (!selectedModel) return false
+
+      const cameraObject = cameraEntity.getObject3D('camera') || cameraEntity.components?.camera?.camera
+      if (!cameraObject) return false
+
+      selectedModel.object3D.getWorldPosition(tempTargetWorldPosition)
+      cameraObject.getWorldPosition(tempCameraWorldPosition)
+      cameraObject.getWorldDirection(tempCameraForward)
+
+      tempDirectionToTarget
+        .copy(tempTargetWorldPosition)
+        .sub(tempCameraWorldPosition)
+
+      if (tempDirectionToTarget.lengthSq() < 1e-8) return false
+
+      const isInFrontOfCamera = tempCameraForward.dot(tempDirectionToTarget.normalize()) > 0.15
+      if (!isInFrontOfCamera) return true
+
+      cameraObject.updateMatrixWorld(true)
+      projectionViewMatrix.multiplyMatrices(cameraObject.projectionMatrix, cameraObject.matrixWorldInverse)
+      viewFrustum.setFromProjectionMatrix(projectionViewMatrix)
+
+      return !viewFrustum.containsPoint(tempTargetWorldPosition)
+    }
+
+    const updateOffscreenBanner = () => {
+      if (!currentlySelected) {
+        setOffscreenBannerVisible(false)
+        return
+      }
+
+      setOffscreenBannerVisible(isSelectedModelOffscreen(), currentlySelected)
+    }
+
+    const bannerLoop = () => {
+      updateOffscreenBanner()
+      requestAnimationFrame(bannerLoop)
+    }
+
+    requestAnimationFrame(bannerLoop)
 
     scene.addEventListener('loaded', () => {
       setLaserVisibility(null)
@@ -282,6 +351,7 @@ export const selectComponent = {
             setSelectedIndex(-1)
             updateButtonVisibility()
             updateModelVisibility(null)
+            setOffscreenBannerVisible(false)
             return
           }
 
@@ -293,6 +363,7 @@ export const selectComponent = {
           openPopup(index, modelDescriptions)
           updateButtonVisibility()
           updateModelVisibility(modelId)
+          updateOffscreenBanner()
         }
 
         // Attach the select handler to the model element

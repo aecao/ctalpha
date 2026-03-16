@@ -56,10 +56,44 @@ body {
   border-radius: 999px;
   background-color: #000000;
   color: #ffffff;
-  font-size: 1.3em;
-  font-weight: 700;
-  line-height: 1;
   cursor: pointer;
+}
+
+.hamburger-icon {
+  width: 18px;
+  height: 12px;
+  position: relative;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-1px);
+}
+
+.hamburger-icon::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 2px solid currentColor;
+  transform: translateY(-50%);
+}
+
+#offscreen-status-banner {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10003;
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.82);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.76em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 #transform-menu-panel {
