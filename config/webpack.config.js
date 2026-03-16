@@ -77,15 +77,19 @@ const makeDefaultHtmlLoader = () => ({
 const config = {
   entry: path.join(srcPath, 'app.js'),
   output: {
-    filename: 'bundle.js',
+    filename: 'bundle.[contenthash:8].js',
     path: outputPath,
     publicPath: 'auto',
+    clean: {
+      // Only clean bundle JS files; preserve assets, external, etc.
+      keep: (asset) => !asset.endsWith('.js') || asset.startsWith('external') || asset.startsWith('assets'),
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
       templateContent: indexTemplateContent,
       filename: 'index.html',
-      inject: false,
+      inject: 'body',
     }),
     new CopyWebpackPlugin({
       patterns: [
