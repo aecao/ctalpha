@@ -305,6 +305,7 @@ export const selectComponent = {
     const tempFrustum = new THREE.Frustum()
     let locked = false
     let lastTouchInteractionAt = 0
+    const TOUCH_CLICK_SUPPRESSION_MS = 900
 
     const getSelectedTitle = (modelId) => {
       const match = modelDescriptions.find((item) => item.Modelname === modelId)
@@ -493,7 +494,9 @@ export const selectComponent = {
         const isTouchLikeEvent = e.type === 'touchend' || e.pointerType === 'touch' || e.pointerType === 'pen'
         const now = performance.now()
 
-        if (e.type === 'click' && now - lastTouchInteractionAt < 550) {
+        // Some tablets emit synthetic click after touch/pointer tap.
+        // Ignore that follow-up click to avoid tap toggling selection twice.
+        if (e.type === 'click' && now - lastTouchInteractionAt < TOUCH_CLICK_SUPPRESSION_MS) {
           return
         }
 
@@ -543,7 +546,7 @@ export const selectComponent = {
       if (sceneCanvas) {
         sceneCanvas.addEventListener('touchend', handleSceneSelection, {passive: true})
         sceneCanvas.addEventListener('pointerup', (event) => {
-          if (event.pointerType === 'pen') {
+          if (event.pointerType === 'touch' || event.pointerType === 'pen') {
             handleSceneSelection(event)
           }
         }, {passive: true})
